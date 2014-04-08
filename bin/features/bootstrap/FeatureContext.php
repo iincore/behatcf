@@ -92,7 +92,7 @@ class FeatureContext extends MinkContext
      */
     public function iClickOnFieldWith($field)
     {
-        $javascript = "$('#".$field."').click()";
+        $javascript = "$('".$field."').click()";
         $this->getSession()->executeScript($javascript);
 
 //        assertNotNull($this->find(
@@ -112,7 +112,46 @@ class FeatureContext extends MinkContext
 //        //throw new PendingException();
 //    }
 
+    /**
+     * Click on the element with the provided xpath query
+     *
+     * @When /^I click on the element with xpath "([^"]*)"$/
+     */
+    public function iClickOnTheElementWithXPath($xpath)
+    {
+        $session = $this->getSession(); // get the mink session
+        $element = $session->getPage()->find(
+            'xpath',
+            $session->getSelectorsHandler()->selectorToXpath('xpath', $xpath)
+        ); // runs the actual query and returns the element
 
+        // errors must not pass silently
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not evaluate XPath: "%s"', $xpath));
+        }
 
+        // ok, let's click on it
+        $element->click();
+
+    }
+    /**
+     * Click on the element with the provided CSS Selector
+     *
+     * @When /^I click on the element with css selector "([^"]*)"$/
+     */
+    public function iClickOnTheElementWithCSSSelector($cssSelector)
+    {
+        $session = $this->getSession();
+        $element = $session->getPage()->find(
+            'xpath',
+            $session->getSelectorsHandler()->selectorToXpath('css', $cssSelector) // just changed xpath to css
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
+        }
+
+        $element->click();
+
+    }
 
 }

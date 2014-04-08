@@ -8,6 +8,6 @@ Feature: View user list
     Given I am logged in as Administrator
     And I am on "/admin/advancedsearch/"
     Then I set value in "keywords" with "3"
-    And I click on field "search-icon"
+    And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
     And I should see "Lakshana Pant"

@@ -8,3 +8,9 @@ java -jar selenium-server-standalone-2.41.0.jar  -interactive
 
 behat --name login
 
+behat features/userlist.feature
+
+
+Id---#
+class-- .
+
