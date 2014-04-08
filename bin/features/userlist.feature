@@ -5,7 +5,7 @@ Feature: View user list
 
   @javascript
   Scenario: View users list
-    Given I am logged in as Administrator
+    Given I am logged in as "lakshana" and "collegefeed"
     And I am on "/admin/advancedsearch/"
     Then I set value in "keywords" with "3"
     And I click on field "img#search-icon"

@@ -22,39 +22,39 @@ default:
 # There runs are more likely to be performed manually on test/dev
 # machines.
 
-desktop:
-  extensions:
-    Behat\MinkExtension\Extension:
-      default_session:                selenium2
-      selenium2:                      ~
-  formatter:
-    name:                             pretty
-    parameters:
-      decorated:                      true
-      verbose:                        false
-      time:                           true
-      language:                       en
-      output_path:                    null
-      multiline_arguments:            true
-
-
-
-## Selenium Profile: Run all tests using the default selenium
-## server so that we can see the tests actually run before us.
-## There runs are more likely to be performed manually on test/dev
-## machines.
+#desktop:
+#  extensions:
+#    Behat\MinkExtension\Extension:
+#      default_session:                selenium2
+#      selenium2:                      ~
+#  formatter:
+#    name:                             pretty
+#    parameters:
+#      decorated:                      true
+#      verbose:                        false
+#      time:                           true
+#      language:                       en
+#      output_path:                    null
+#      multiline_arguments:            true
 #
-ci:
-  extensions:
-    Behat\MinkExtension\Extension:
-      default_session:                selenium2
-      selenium2:
-        wd_host:                      ""
-  formatter:
-    name:                             pretty,junit,html
-    parameters:
-      output_path:                    null,junit,behat_report.html
-
-
-
+#
+#
+### Selenium Profile: Run all tests using the default selenium
+### server so that we can see the tests actually run before us.
+### There runs are more likely to be performed manually on test/dev
+### machines.
+##
+#ci:
+#  extensions:
+#    Behat\MinkExtension\Extension:
+#      default_session:                selenium2
+#      selenium2:
+#        wd_host:                      ""
+#  formatter:
+#    name:                             pretty,junit,html
+#    parameters:
+#      output_path:                    null,junit,behat_report.html
+#
+#
+#
 

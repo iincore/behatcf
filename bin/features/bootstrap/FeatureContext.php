@@ -28,43 +28,17 @@ class FeatureContext extends MinkContext
     }
 
     /**
-     * @Given /^(?:|I )am logged in as Administrator$/
+     * @Given /^(?:|I )am logged in as "([^"]*)" and "([^"]*)"$/
      */
-    public function iAmLoggedInAsAdministrator()
+    public function iAmLoggedInAs($username, $password)
     {
         //require_once __DIR__ . '/steps/admin-login.php';
         return array(
             new Step\When('I am on "/login"'),
-            new Step\When('I fill in "username" with "lakshana"'),
-            new Step\When('I fill in "password" with "collegefeed"'),
+            new Step\When('I fill in "username" with "'.$username.'"'),
+            new Step\When('I fill in "password" with "'.$password.'"'),
             new Step\When('I press "_submit"'),
             new Step\When('I should see "Dashboard"'),
-        );
-    }
-
-    /**
-     * @Given /^(?:|I )am logged in as Student$/
-     */
-    public function iAmLoggedInAsStudent()
-    {
-        return array(
-            new Step\When('I am on "/login"'),
-            new Step\When('I fill in "username" with "emp"'),
-            new Step\When('I fill in "password" with "pass"'),
-            new Step\When('I press "_submit"'),
-        );
-    }
-
-    /**
-     * @Given /^(?:|I )am logged in as Employer$/
-     */
-    public function iAmLoggedInAsEmployer()
-    {
-        return array(
-            new Step\When('I am on "/login"'),
-            new Step\When('I fill in "username" with "emp"'),
-            new Step\When('I fill in "password" with "pass"'),
-            new Step\When('I press "_submit"'),
         );
     }
 
