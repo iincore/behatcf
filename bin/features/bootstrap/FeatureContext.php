@@ -144,31 +144,32 @@ class FeatureContext extends MinkContext
     //If role is Student then go to 1 student ok, 2 employer Awk, 3 admin Awk
 
     /**
-     * Check role based on username
-     *
-     * @When /^I check role of "([^"]*)" with "([^"]*)" $/
+     * @Given /^I check role of "([^"]*)" with "([^"]*)"$/
      */
-    public function checkRole($username, $role)
+    public function iCheckRoleOfWith($username, $role)
     {
         $query = "select roles from cf_user where username = '$username' and roles like '%$role%'";
         $result = $this->getQueryResult($query);
-        $step = array();
-        new Step\When('I fill in "username" with "'.$username.'"');
-            new Step\When('I fill in "password" with "'.$password.'"');
+//      $steps = array();
+//      $step =  new Step\When('I fill in "username" with "'.$username.'"');
+//      new Step\When('I fill in "password" with "'.$password.'"');
+        if(empty($result)){
+            throw new Exception($username.' is not '.$role);
+        }
     }
 
     public function getQueryResult($query)
     {
-        $host = $this->getMinkParameter('localhost');
-        $username = $this->getMinkParameter('username');
-        $password = $this->getMinkParameter('password');
-        $db = $this->getMinkParameter('db');
+        $host = "localhost"; #$this->getMinkParameter('localhost');
+        $username = "root"; #$this->getMinkParameter('username');
+        $password = ""; #$this->getMinkParameter('password');
+        $db = "cf"; #$this->getMinkParameter('db');
         $dbhandle = mysql_connect($host, $username, $password)
         or die("Unable to connect to MySQL");
         $con = mysqli_connect($host,$username,$password,$db);
         $result = mysqli_query($con, $query);
         $query = "";
-        return $result;
+        return mysqli_fetch_array($result);
 
     }
 }
