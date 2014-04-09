@@ -142,12 +142,13 @@ class FeatureContext extends MinkContext
     //If role is Admin then go to 1 student, 2 employer, 3 admin all ok
     //If role is Employer then go to 1 student ok, 2 employer ok, 3 admin Awk
     //If role is Student then go to 1 student ok, 2 employer Awk, 3 admin Awk
+
     /**
      * Click on the element with the provided CSS Selector
      *
-     * @When /^I click on the element with css selector "([^"]*)"$/
+     * @When /^I check role of "([^"]*)" with "([^"]*)" $/
      */
-    public function check($cssSelector)
+    public function checkRole($cssSelector)
     {
         $session = $this->getSession();
         $element = $session->getPage()->find(
