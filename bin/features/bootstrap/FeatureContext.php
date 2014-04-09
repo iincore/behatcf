@@ -63,11 +63,12 @@ class FeatureContext extends MinkContext
     }
 
     /**
-     * @Given /^I change field "([^"]*)" property "([^"]*)" with "([^"]*)"$/
+     * @Given /^I change field "([^"]*)" value with "([^"]*)"$/
      */
-    public function iChangeFieldPropWith($field, $prop, $value)
+    public function iChangeFieldValueWith($field, $value)
     {
-        $javascript = "$('".$field."').prop('".$prop."',". $value .");";
+        $javascript = "$('".$field."').prop('readonly',false);";
+        $javascript .= "$('".$field."').val(".$value.");";
         $this->getSession()->executeScript($javascript);
     }
 
