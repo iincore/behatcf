@@ -15,7 +15,7 @@ Feature: collegefeed login
     Given I am on "/profile/lakshana"
     And I should see "Public profile"
    #
-   #Top 3 classes
+   #Education
    #
     When I click on field "#profile-contents > div > div:nth-child(6) > a.add-section"
     Then I look for the output wait "30" seconds
@@ -30,4 +30,3 @@ Feature: collegefeed login
     Then I look for the output wait "60" seconds
 
 
-#profile-contents > div > div:nth-child(6) > a.add-section

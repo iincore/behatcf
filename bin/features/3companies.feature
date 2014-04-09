@@ -12,7 +12,7 @@ Feature: collegefeed login
     When I follow "Profile"
     And I should see "Public profile"
   #
-  #Personal statement
+  #Top 3 companies
   #
     When I click on field "#profile-contents > div > div:nth-child(8) > a"
     Then I look for the output wait "30" seconds
