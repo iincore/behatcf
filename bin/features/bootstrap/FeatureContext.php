@@ -63,6 +63,15 @@ class FeatureContext extends MinkContext
     }
 
     /**
+     * @Given /^I change field "([^"]*)" property "([^"]*)" with "([^"]*)"$/
+     */
+    public function iChangeFieldPropWith($field, $prop, $value)
+    {
+        $javascript = "$('".$field."').prop('".$prop."',". $value .");";
+        $this->getSession()->executeScript($javascript);
+    }
+
+    /**
      * @Given /^I click on field "([^"]*)"$/
      */
     public function iClickOnFieldWith($field)
@@ -124,21 +133,44 @@ class FeatureContext extends MinkContext
         if (null === $element) {
             throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
         }
-
         $element->click();
     }
 
+    //get user name
+    //get roles by username
+    //If role is Admin then go to 1 student, 2 employer, 3 admin all ok
+    //If role is Employer then go to 1 student ok, 2 employer ok, 3 admin Awk
+    //If role is Student then go to 1 student ok, 2 employer Awk, 3 admin Awk
     /**
      * Click on the element with the provided CSS Selector
      *
-     * @When /^Connect with database host "([^"]*)" username "([^"]*)" password "([^"]*)" db "([^"]*)"$/
+     * @When /^I click on the element with css selector "([^"]*)"$/
      */
-    public function connectWithDatabaseHost($host, $username, $password, $db)
+    public function check($cssSelector)
     {
-        $dbhandle = mysql_connect($host, $username, $password)
-        or die("Unable to connect to MySQL");
-        $con=mysqli_connect($host,$username,$password,$db);
-
+        $session = $this->getSession();
+        $element = $session->getPage()->find(
+            'xpath',
+            $session->getSelectorsHandler()->selectorToXpath('css', $cssSelector) // just changed xpath to css
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
+        }
+        $element->click();
     }
 
+    public function getQueryResult($query)
+    {
+        $host = "";
+        $username = "";
+        $password = "";
+        $db = "";
+        $dbhandle = mysql_connect($host, $username, $password)
+        or die("Unable to connect to MySQL");
+        $con = mysqli_connect($host,$username,$password,$db);
+        $result = mysqli_query($con, $query);
+        $query = "";
+        return $result;
+
+    }
 }

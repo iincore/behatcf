@@ -15,7 +15,8 @@ default:
       goutte:                         ~
 #          guzzle_parameters:
 #            ssl.certificate_authority: false
-
+imports:
+    - config/custom_config.yml
 
 # Selenium Profile: Run all tests using the default selenium 
 # server so that we can see the tests actually run before us.

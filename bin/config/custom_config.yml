@@ -1,0 +1,9 @@
+
+# Default profile: base settings that all other profiles
+# will inherit from.
+# Well this is awkward.
+db_config:
+    db: cf
+    host: localhost
+    username: root
+    password: password
