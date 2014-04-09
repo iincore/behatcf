@@ -28,8 +28,5 @@ Feature: collegefeed login
     Then I fill in "cf_studentbundle_topclassestype_yyfrom" with "2008"
     And I fill in "cf_studentbundle_topclassestype_description" with "testing"
     Then I fill in "cf_studentbundle_topclassestype_reason" with "Test"
-    Then I click on the element with xpath "//div[3]/div/div/div[3]/div[2]/div/div[5]/div[2]/div/div[2]/button"
+    When I click on field "div#top-classes-section.row div.add-row div.content div.text-left button.btn"
     Then I look for the output wait "30" seconds
-
-
-
