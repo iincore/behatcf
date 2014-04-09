@@ -9,7 +9,7 @@ Feature: collegefeed login
 #@javascript
 
   @javascript
-  Scenario:Now the user is at pubile profile to fill About me
+  Scenario:Now the user is at pubile profile to fill All the sections in the page
     Given I am logged in as "lakshana" and "collegefeed"
     And I should see "Lakshana Pant"
     Given I am on "/profile/lakshana"
@@ -50,8 +50,6 @@ Feature: collegefeed login
     When I click on field "div.pickadate__holder--opened div.pickadate__day--today"
     When I click on field "#cf_studentbundle_workexperiencetype_toDate"
     When I click on field "div.pickadate__holder--opened div.pickadate__day--today"
-  #Given I change field "input[name=cf_studentbundle_workexperiencetype[fromDate]_submit]" value with "2013/4/9"
-  #Given I change field "input[name=cf_studentbundle_workexperiencetype[toDate]_submit" value with "2014/4/9"
     Then I fill in "cf_studentbundle_workexperiencetype_roleDescription" with "testing"
     And I fill in "cf_studentbundle_workexperiencetype_skills" with "HTML"
     Then I click on field "#profile-contents > div > div:nth-child(3) button.btn.btn-primary.btn-save"
@@ -62,8 +60,8 @@ Feature: collegefeed login
     When I click on field "#profile-contents > div > div:nth-child(4) > a.add-section"
     Then I look for the output wait "30" seconds
     And I should see "Name"
-    Then I fill in "cf_studentbundle_accomplishmentstype[name]" with "Lakshana"
-    And I fill in "cf_studentbundle_accomplishmentstype[description]" with "Testing"
+    Then I fill in "cf_studentbundle_accomplishmentstype_name" with "Lakshana"
+    And I fill in "cf_studentbundle_accomplishmentstype_description" with "Testing"
     When I click on field "#cf_studentbundle_accomplishmentstype_date"
     When I click on field "div.pickadate__holder--opened div.pickadate__day--today"
     Then I fill in "cf_studentbundle_accomplishmentstype_instititution" with "IINCORE"
