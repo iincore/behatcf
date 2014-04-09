@@ -14,3 +14,4 @@ behat features/userlist.feature
 Id---#
 class-- .
 
+behat features/profile.feature

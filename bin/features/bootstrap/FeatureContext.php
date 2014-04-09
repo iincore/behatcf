@@ -33,6 +33,7 @@ class FeatureContext extends MinkContext
     public function iAmLoggedInAs($username, $password)
     {
         //require_once __DIR__ . '/steps/admin-login.php';
+
         return array(
             new Step\When('I am on "/login"'),
             new Step\When('I fill in "username" with "'.$username.'"'),
@@ -125,6 +126,18 @@ class FeatureContext extends MinkContext
         }
 
         $element->click();
+    }
+
+    /**
+     * Click on the element with the provided CSS Selector
+     *
+     * @When /^Connect with database host "([^"]*)" username "([^"]*)" password "([^"]*)" db "([^"]*)"$/
+     */
+    public function connectWithDatabaseHost($host, $username, $password, $db)
+    {
+        $dbhandle = mysql_connect($host, $username, $password)
+        or die("Unable to connect to MySQL");
+        $con=mysqli_connect($host,$username,$password,$db);
 
     }
 
