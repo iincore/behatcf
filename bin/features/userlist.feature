@@ -11,3 +11,9 @@ Feature: View user list
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
     And I should see "Lakshana Pant"
+
+
+
+
+
+
