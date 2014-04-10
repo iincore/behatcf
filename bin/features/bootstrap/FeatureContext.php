@@ -90,11 +90,23 @@ class FeatureContext extends MinkContext
     }
 
 //    /**
-//     * @Given /^I am on "([^"]*)"$/
+//     * Attaches file to field with specified id|name|label|value.
+//     *
+//     * @When /^(?:|I )attach the file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
 //     */
-//    public function iAmOn($arg1)
+//
+//    public function attachFileToField($field, $path)
 //    {
-//        //throw new PendingException();
+//        $field = $this->fixStepArgument($field);
+//
+//        if ($this->getMinkParameter('files_path')) {
+//            $fullPath = rtrim(realpath($this->getMinkParameter('files_path')), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$path;
+//            if (is_file($fullPath)) {
+//                $path = $fullPath;
+//            }
+//        }
+//
+//        $this->getSession()->getPage()->attachFileToField($field, $path);
 //    }
 
     /**
@@ -160,7 +172,7 @@ class FeatureContext extends MinkContext
 
     public function getQueryResult($query)
     {
-        $host = "localhost"; #$this->getMinkParameter('localhost');
+        $host = "localhost"; #$this->getMinkParameter('host');
         $username = "root"; #$this->getMinkParameter('username');
         $password = ""; #$this->getMinkParameter('password');
         $db = "cf"; #$this->getMinkParameter('db');

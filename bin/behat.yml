@@ -13,6 +13,7 @@ default:
       javascript_session:             'selenium2'
       selenium2:                      ~
       goutte:                         ~
+      files_path:                     "D:\\picture\\"
 #          guzzle_parameters:
 #            ssl.certificate_authority: false
 imports:
