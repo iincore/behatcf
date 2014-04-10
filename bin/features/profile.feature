@@ -14,7 +14,15 @@ Feature: collegefeed login
     And I should see "Lakshana Pant"
     Given I am on "/profile/lakshana"
     And I should see "Public profile"
-
+  #
+  #Edit Name
+  #
+    When I click on field "#edit-name-btn"
+    Then I look for the output wait "30" seconds
+    Then I fill in "cf_info_name_type_firstName" with "Lakshana"
+    And I fill in "cf_info_name_type_lastName" with "Pant"
+    When I click on field "#edit-name-inline > button.btn-save"
+    And I look for the output wait "60" seconds
   #
   #About
   #
