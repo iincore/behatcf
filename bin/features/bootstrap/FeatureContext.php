@@ -68,7 +68,34 @@ class FeatureContext extends MinkContext
     public function iChangeFieldValueWith($field, $value)
     {
         $javascript = "$('".$field."').prop('readonly',false);";
-        $javascript .= "$('".$field."').val(".$value.");";
+        $javascript .= "$('".$field."').val('".$value."');";
+        $this->getSession()->executeScript($javascript);
+    }
+
+    /**
+     * @Given /^I remove class "([^"]*)" from field "([^"]*)"$/
+     */
+    public function iRemoveClassFromField($class, $field)
+    {
+        $javascript = "$('".$field."').removeClass('".$class."');";
+        $this->getSession()->executeScript($javascript);
+    }
+
+    /**
+     * @Given /^I add class "([^"]*)" to field "([^"]*)"$/
+     */
+    public function iAddClassFromField($class, $field)
+    {
+        $javascript = "$('".$field."').addClass('".$class."');";
+        $this->getSession()->executeScript($javascript);
+    }
+
+    /**
+     * @Given /^I submit the form "([^"]*)"$/
+     */
+    public function iSubmitTheForm($field)
+    {
+        $javascript = "$('".$field."').submit();";
         $this->getSession()->executeScript($javascript);
     }
 
@@ -89,26 +116,6 @@ class FeatureContext extends MinkContext
 //            'input[id="'.$field.'"]')->click();
     }
 
-//    /**
-//     * Attaches file to field with specified id|name|label|value.
-//     *
-//     * @When /^(?:|I )attach the file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
-//     */
-//
-//    public function attachFileToField($field, $path)
-//    {
-//        $field = $this->fixStepArgument($field);
-//
-//        if ($this->getMinkParameter('files_path')) {
-//            $fullPath = rtrim(realpath($this->getMinkParameter('files_path')), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$path;
-//            if (is_file($fullPath)) {
-//                $path = $fullPath;
-//            }
-//        }
-//
-//        $this->getSession()->getPage()->attachFileToField($field, $path);
-//    }
-
     /**
      * Click on the element with the provided xpath query
      *
@@ -126,10 +133,8 @@ class FeatureContext extends MinkContext
         if (null === $element) {
             throw new \InvalidArgumentException(sprintf('Could not evaluate XPath: "%s"', $xpath));
         }
-
         // ok, let's click on it
         $element->click();
-
     }
     /**
      * Click on the element with the provided CSS Selector
@@ -147,6 +152,60 @@ class FeatureContext extends MinkContext
             throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
         }
         $element->click();
+    }
+
+    /**
+     * Click on the element with the provided CSS Selector
+     *
+     * @When /^I Check on the element with css selector "([^"]*)"$/
+     */
+    public function iCheckOnTheElementWithCSSSelector($cssSelector)
+    {
+        $session = $this->getSession();
+        $element = $session->getPage()->find(
+            'xpath',
+            $session->getSelectorsHandler()->selectorToXpath('css', $cssSelector) // just changed xpath to css
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
+        }
+        $element->check();
+    }
+
+    /**
+     * Click on the element with the provided CSS Selector
+     *
+     * @When /^I Uncheck on the element with css selector "([^"]*)"$/
+     */
+    public function iUnCheckOnTheElementWithCSSSelector($cssSelector)
+    {
+        $session = $this->getSession();
+        $element = $session->getPage()->find(
+            'xpath',
+            $session->getSelectorsHandler()->selectorToXpath('css', $cssSelector) // just changed xpath to css
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
+        }
+        $element->uncheck();
+    }
+
+    /**
+     * Click on the element with the provided CSS Selector
+     *
+     * @When /^I Select on the option with css selector "([^"]*)" with "([^"]*)"$/
+     */
+    public function iSelectTheOptionWithCSSSelector($cssSelector, $value)
+    {
+        $session = $this->getSession();
+        $element = $session->getPage()->find(
+            'xpath',
+            $session->getSelectorsHandler()->selectorToXpath('css', $cssSelector) // just changed xpath to css
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
+        }
+        $element->selectOption($value, true);
     }
 
     //get user name

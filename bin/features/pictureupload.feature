@@ -18,3 +18,11 @@ Feature: Profile pic upload
     #
 
     When I click on field "#change-photo-btn"
+    Then I look for the output wait "180" seconds
+    Then I look for the output wait "60" seconds
+
+#    Given I remove class "hidden" from field "#cf_studentbundle_profilephototype_file"
+#    When I attach the file "1.png" to "cf_studentbundle_profilephototype_file"
+#    Given I add class "hidden" to field "#cf_studentbundle_profilephototype_file"
+#    Given I submit the form "upload-profile-photo"
+#    Then I look for the output wait "60" seconds
