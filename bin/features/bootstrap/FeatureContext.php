@@ -58,7 +58,7 @@ class FeatureContext extends MinkContext
      */
     public function iSetValueInWith($arg1, $arg2)
     {
-        $javascript = "$('#".$arg1."').val(". $arg2 .")";
+        $javascript = "$('#".$arg1."').val('". $arg2 ."')";
         $this->getSession()->executeScript($javascript);
     }
 
