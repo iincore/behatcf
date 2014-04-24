@@ -15,7 +15,7 @@ use Behat\MinkExtension\Context\MinkContext;
  */
 class FeatureContext extends MinkContext
 {
-
+    private $params = array();
     /**
      * Initializes context.
      * Every scenario gets it's own context object.
@@ -24,6 +24,7 @@ class FeatureContext extends MinkContext
      */
     public function __construct(array $parameters)
     {
+        $this->params = $parameters;
         // Initialize your context here
     }
 
@@ -258,15 +259,14 @@ class FeatureContext extends MinkContext
 
     public function getQueryResult($query)
     {
-        $host = "cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com"; #$this->getMinkParameter('host');
-        $username = "collegefeed"; #$this->getMinkParameter('username');
-        $password = "collegefeed"; #$this->getMinkParameter('password');
-        $db = "cf9Jan14"; #$this->getMinkParameter('db');
-
-//        $host = $this->getMinkParameter('host');#"cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com";
-//        $username = $this->getMinkParameter('username');#"collegefeed"; #
-//        $password = $this->getMinkParameter('password');#"collegefeed"; #
-//        $db = $this->getMinkParameter('db'); #"cf9Jan14"
+//        $host = "cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com"; #$this->getMinkParameter('host');
+//        $username = "collegefeed"; #$this->getMinkParameter('username');
+//        $password = "collegefeed"; #$this->getMinkParameter('password');
+//        $db = "cf9Jan14"; #$this->getMinkParameter('db');
+        $host = $this->params['host'];
+        $username = $this->params['db_username'];
+        $password = $this->params['db_password'];
+        $db = $this->params['db'];
 
         $dbhandle = mysql_connect($host, $username, $password)
         or die("Unable to connect to MySQL");
@@ -274,6 +274,5 @@ class FeatureContext extends MinkContext
         $result = mysqli_query($con, $query);
         $query = "";
         return mysqli_fetch_array($result);
-
     }
 }

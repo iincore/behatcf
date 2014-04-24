@@ -5,6 +5,13 @@
 default:
   context:
     class:                            'FeatureContext'
+    parameters :
+          username: lakshana
+          password : collegefeed
+          db: cf9Jan14
+          host: cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com
+          db_username: collegefeed
+          db_password: collegefeed
   paths:
     bootstrap:                        'features/bootstrap'
   extensions:
@@ -36,10 +43,7 @@ imports:
     - config/custom_config.yml
 
 db_config:
-    db: cf9Jan14
-    host: cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com
-    username: collegefeed
-    password: collegefeed
+
 
 # Selenium Profile: Run all tests using the default selenium 
 # server so that we can see the tests actually run before us.
