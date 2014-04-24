@@ -16,8 +16,29 @@ default:
       files_path:                     "D:\\picture\\"
 #          guzzle_parameters:
 #            ssl.certificate_authority: false
+
+prod:
+  context:
+    class:                            'FeatureContext'
+  paths:
+    bootstrap:                        'features/bootstrap'
+  extensions:
+    Behat\MinkExtension\Extension:
+      base_url:                       'http://collegefeed.com'
+      javascript_session:             'selenium2'
+      selenium2:                      ~
+      goutte:                         ~
+      files_path:                     "D:\\picture\\"
+
+
 imports:
     - config/custom_config.yml
+
+db_config:
+    db: cf
+    host: localhost
+    username: root
+    password: password
 
 # Selenium Profile: Run all tests using the default selenium 
 # server so that we can see the tests actually run before us.
@@ -46,17 +67,17 @@ imports:
 ### There runs are more likely to be performed manually on test/dev
 ### machines.
 ##
-#ci:
-#  extensions:
-#    Behat\MinkExtension\Extension:
-#      default_session:                selenium2
-#      selenium2:
-#        wd_host:                      ""
-#  formatter:
-#    name:                             pretty,junit,html
-#    parameters:
-#      output_path:                    null,junit,behat_report.html
-#
+ci:
+  extensions:
+    Behat\MinkExtension\Extension:
+      default_session:                selenium2
+      selenium2:
+        wd_host:                      ""
+  formatter:
+    name:                             pretty,junit,html
+    parameters:
+      output_path:                    null,junit,behat_report.html
+
 #
 #
 

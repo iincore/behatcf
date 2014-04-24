@@ -10,6 +10,9 @@ behat --name login
 
 behat features/userlist.feature
 
+#Run Different profiles
+behat --profile prod features/auth.feature
+
 
 Id---#
 class-- .
