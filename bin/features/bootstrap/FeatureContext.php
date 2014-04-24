@@ -245,6 +245,17 @@ class FeatureContext extends MinkContext
         }
     }
 
+    /**
+     * @Given /^I exec query "([^"]*)" on db throw exception "([^"]*)"$/
+     */
+    public function iExecQueryOnDb($query, $ex)
+    {
+        $result = $this->getQueryResult($query);
+        if(empty($result)){
+            throw new Exception($ex);
+        }
+    }
+
     public function getQueryResult($query)
     {
         $host = "cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com"; #$this->getMinkParameter('host');

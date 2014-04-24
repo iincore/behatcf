@@ -28,7 +28,7 @@ Feature: collegefeed login
   #
   #Check db is location updated
   #
-    Given I check location in db "Santa Clara" for username "lakshana"
+    Given I exec query "select * from cf_profile_settings a Join cf_user u on a.owner_id = u.id where u.username = 'lakshana' and current_location like '%Santa Clara%'" on db throw exception "location is not set properly"
     And I look for the output wait "30" seconds
 
 
