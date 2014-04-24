@@ -31,14 +31,15 @@ prod:
       files_path:                     "D:\\picture\\"
 
 
+
 imports:
     - config/custom_config.yml
 
 db_config:
-    db: cf
-    host: localhost
-    username: root
-    password: password
+    db: cf9Jan14
+    host: cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com
+    username: collegefeed
+    password: collegefeed
 
 # Selenium Profile: Run all tests using the default selenium 
 # server so that we can see the tests actually run before us.

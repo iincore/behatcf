@@ -229,12 +229,34 @@ class FeatureContext extends MinkContext
         }
     }
 
+    /**
+     * @Given /^I check location in db "([^"]*)" for username "([^"]*)"$/
+     */
+    public function CheckCurrentLocation($location, $username)
+    {
+        $query = "select * from cf_profile_settings a
+                    Join cf_user u on a.owner_id = u.id
+                    where u.username = '$username'
+                    and current_location like like '%$location%'";
+        $result = $this->getQueryResult($query);
+
+        if(empty($result)){
+            throw new Exception($location.' is not set in DB');
+        }
+    }
+
     public function getQueryResult($query)
     {
-        $host = "localhost"; #$this->getMinkParameter('host');
-        $username = "root"; #$this->getMinkParameter('username');
-        $password = ""; #$this->getMinkParameter('password');
-        $db = "cf"; #$this->getMinkParameter('db');
+        $host = "cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com"; #$this->getMinkParameter('host');
+        $username = "collegefeed"; #$this->getMinkParameter('username');
+        $password = "collegefeed"; #$this->getMinkParameter('password');
+        $db = "cf9Jan14"; #$this->getMinkParameter('db');
+
+//        $host = $this->getMinkParameter('host');#"cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com";
+//        $username = $this->getMinkParameter('username');#"collegefeed"; #
+//        $password = $this->getMinkParameter('password');#"collegefeed"; #
+//        $db = $this->getMinkParameter('db'); #"cf9Jan14"
+
         $dbhandle = mysql_connect($host, $username, $password)
         or die("Unable to connect to MySQL");
         $con = mysqli_connect($host,$username,$password,$db);

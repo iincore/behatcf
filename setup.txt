@@ -10,7 +10,7 @@ behat --name login
 
 behat features/userlist.feature
 
-#Run Different profiles
+#Run Different profiles based on environment
 behat --profile prod features/auth.feature
 
 

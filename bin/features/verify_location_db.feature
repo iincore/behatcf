@@ -26,13 +26,10 @@ Feature: collegefeed login
     Then I press "Save"
     And I look for the output wait "60" seconds
   #
-  #Edit Availablity
+  #Check db is location updated
   #
-    When I click on the element with xpath "//div[2]/div/div[2]/div/div/table/tbody/tr[5]/td[3]/a"
-    Then I look for the output wait "20" seconds
-    When I check "cf_studentbundle_availabilitytype_availability_0"
-    Then I press "Save"
+    Given I check location in db "Santa Clara" for username "lakshana"
     And I look for the output wait "30" seconds
-    Then I should see "Actively Looking"
+
 
 
