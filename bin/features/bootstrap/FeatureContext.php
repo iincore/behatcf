@@ -272,6 +272,25 @@ class FeatureContext extends MinkContext
         }
     }
 
+    /**
+     * @Given /^I switch to window "([^"]*)"$/
+     */
+    public function iSwitchToWindow($arg1)
+    {
+        $arg1 = $this->replaceParameter($arg1);
+        $this->getSession()->wait(5000);
+        $this->getSession()->switchToWindow($arg1);
+    }
+
+    /**
+     * @Given /^I maximize the window "([^"]*)"$/
+     */
+    public function iMaximizeTheWindow($arg1)
+    {
+        $arg1 = $this->replaceParameter($arg1);
+        $this->getSession()->getDriver()->resizeWindow(1200, 800);
+    }
+
     public function replaceParameter($param){
         if(substr_count($param, '{') > 0)
         {
