@@ -16,6 +16,7 @@ use Behat\MinkExtension\Context\MinkContext;
 class FeatureContext extends MinkContext
 {
     private $params = array();
+    var $originalWindowName = '';
     /**
      * Initializes context.
      * Every scenario gets it's own context object.
@@ -302,6 +303,51 @@ class FeatureContext extends MinkContext
         $arg1 = $this->replaceParameter($arg1);
         $this->getSession()->wait(5000);
         $this->getSession()->switchToWindow($arg1);
+    }
+
+    /**
+     * @Then /^I switch to popup$/
+     */
+    public function iSwitchToPopup() {
+        $originalWindowName = $this->getSession()->getWindowName(); //Get the original name
+
+        if (empty($this->originalWindowName)) {
+            $this->originalWindowName = $originalWindowName;
+        }
+
+        $this->getSession()->getPage()->pressButton("Withdraw"); //Pressing the withdraw button
+
+        $popupName = $this->getNewPopup($originalWindowName);
+
+        //Switch to the popup Window
+        $this->getSession()->switchToWindow($popupName);
+    }
+
+    /**
+     * @Then /^I switch back to original window$/
+     */
+    public function iSwitchBackToOriginalWindow() {
+        //Switch to the original window
+        $this->getSession()->switchToWindow($this->originalWindowName);
+    }
+
+    /**
+     * This gets the window name of the new popup.
+     */
+    private function getNewPopup($originalWindowName = NULL) {
+        //Get all of the window names first
+        $names = $this->getSession()->getWindowNames();
+
+        //Now it should be the last window name
+        $last = array_pop($names);
+
+        if (!empty($originalWindowName)) {
+            while ($last == $originalWindowName && !empty($names)) {
+                $last = array_pop($names);
+            }
+        }
+
+        return $last;
     }
 
     /**
