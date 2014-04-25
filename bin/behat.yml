@@ -8,10 +8,12 @@ default:
     parameters :
           username: lakshana
           password : collegefeed
-          db: cf9Jan14
+          db: cf_feeds
           host: cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com
           db_username: collegefeed
           db_password: collegefeed
+          admin_from_date: 04/23/2014
+          admin_to_date: 04/23/2014
   paths:
     bootstrap:                        'features/bootstrap'
   extensions:
@@ -27,6 +29,13 @@ default:
 prod:
   context:
     class:                            'FeatureContext'
+    parameters :
+          username: lakshana
+          password : collegefeed
+          db: cf
+          host: host
+          db_username: collegefeed
+          db_password: collegefeed
   paths:
     bootstrap:                        'features/bootstrap'
   extensions:

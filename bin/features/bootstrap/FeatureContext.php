@@ -34,7 +34,8 @@ class FeatureContext extends MinkContext
     public function iAmLoggedInAs($username, $password)
     {
         //require_once __DIR__ . '/steps/admin-login.php';
-
+        $username = $this->replaceParameter($username);
+        $password = $this->replaceParameter($password);
         return array(
             new Step\When('I am on "/login"'),
             new Step\When('I fill in "username" with "'.$username.'"'),
@@ -59,6 +60,8 @@ class FeatureContext extends MinkContext
      */
     public function iSetValueInWith($arg1, $arg2)
     {
+        $arg1 = $this->replaceParameter($arg1);
+        $arg2 = $this->replaceParameter($arg2);
         $javascript = "$('#".$arg1."').val('". $arg2 ."')";
         $this->getSession()->executeScript($javascript);
     }
@@ -68,6 +71,8 @@ class FeatureContext extends MinkContext
      */
     public function iChangeFieldValueWith($field, $value)
     {
+        $field = $this->replaceParameter($field);
+        $value = $this->replaceParameter($value);
         $javascript = "$('".$field."').prop('readonly',false);";
         $javascript .= "$('".$field."').val('".$value."');";
         $this->getSession()->executeScript($javascript);
@@ -78,6 +83,8 @@ class FeatureContext extends MinkContext
      */
     public function iRemoveClassFromField($class, $field)
     {
+        $class = $this->replaceParameter($class);
+        $field = $this->replaceParameter($field);
         $javascript = "$('".$field."').removeClass('".$class."');";
         $this->getSession()->executeScript($javascript);
     }
@@ -87,6 +94,8 @@ class FeatureContext extends MinkContext
      */
     public function iAddClassFromField($class, $field)
     {
+        $class = $this->replaceParameter($class);
+        $field = $this->replaceParameter($field);
         $javascript = "$('".$field."').addClass('".$class."');";
         $this->getSession()->executeScript($javascript);
     }
@@ -96,6 +105,7 @@ class FeatureContext extends MinkContext
      */
     public function iSubmitTheForm($field)
     {
+        $field = $this->replaceParameter($field);
         $javascript = "$('".$field."').submit();";
         $this->getSession()->executeScript($javascript);
     }
@@ -105,6 +115,7 @@ class FeatureContext extends MinkContext
      */
     public function iClickOnFieldWith($field)
     {
+        $field = $this->replaceParameter($field);
         $javascript = "$('".$field."').click()";
         $this->getSession()->executeScript($javascript);
 
@@ -220,6 +231,8 @@ class FeatureContext extends MinkContext
      */
     public function iCheckRoleOfWith($username, $role)
     {
+        $username = $this->replaceParameter($username);
+        $role = $this->replaceParameter($role);
         $query = "select roles from cf_user where username = '$username' and roles like '%$role%'";
         $result = $this->getQueryResult($query);
 //      $steps = array();
@@ -235,6 +248,8 @@ class FeatureContext extends MinkContext
      */
     public function CheckCurrentLocation($location, $username)
     {
+        $username = $this->replaceParameter($username);
+        $location = $this->replaceParameter($location);
         $query = "select * from cf_profile_settings a
                     Join cf_user u on a.owner_id = u.id
                     where u.username = '$username'
@@ -257,12 +272,21 @@ class FeatureContext extends MinkContext
         }
     }
 
+    public function replaceParameter($param){
+        if(substr_count($param, '{') > 0)
+        {
+            preg_match('~{(.*?)}~', $param, $output);
+            foreach($output as $name){
+                if(isset($this->params[$name])){
+                    $param = str_replace('{'.$name.'}', $this->params[$name], $param);
+                }
+            }
+        }
+        return $param;
+    }
+
     public function getQueryResult($query)
     {
-//        $host = "cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com"; #$this->getMinkParameter('host');
-//        $username = "collegefeed"; #$this->getMinkParameter('username');
-//        $password = "collegefeed"; #$this->getMinkParameter('password');
-//        $db = "cf9Jan14"; #$this->getMinkParameter('db');
         $host = $this->params['host'];
         $username = $this->params['db_username'];
         $password = $this->params['db_password'];
