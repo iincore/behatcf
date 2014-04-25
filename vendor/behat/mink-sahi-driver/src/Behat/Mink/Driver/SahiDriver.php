@@ -2,13 +2,10 @@
 
 namespace Behat\Mink\Driver;
 
-use Behat\SahiClient\Client,
-    Behat\SahiClient\Exception\ConnectionException;
-
-use Behat\Mink\Session,
-    Behat\Mink\Element\NodeElement,
-    Behat\Mink\Exception\DriverException,
-    Behat\Mink\Exception\UnsupportedDriverActionException;
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Session;
+use Behat\SahiClient\Client;
+use Behat\SahiClient\Exception\ConnectionException;
 
 /*
  * This file is part of the Behat\Mink.
@@ -23,7 +20,7 @@ use Behat\Mink\Session,
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class SahiDriver implements DriverInterface
+class SahiDriver extends CoreDriver
 {
     private $started = false;
     private $browserName;
@@ -99,11 +96,27 @@ class SahiDriver implements DriverInterface
      */
     public function reset()
     {
+        $js = <<<JS
+(function(){
+    var path,
+        cookies = document.cookie.split('; ');
+
+    for (var i = 0; i < cookies.length && cookies[i]; i++) {
+        path = location.pathname;
+
+        do {
+            document.cookie = cookies[i] + '; path=' + path + '; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            path = path.replace(/.$/, '');
+        } while (path);
+    }
+})()
+JS;
+
         try {
-            $this->executeScript(
-                '(function(){var c=document.cookie.split(";");for(var i=0;i<c.length;i++){var e=c[i].indexOf("=");var n=e>-1?c[i].substr(0,e):c[i];document.cookie=n+"=;expires=Thu, 01 Jan 1970 00:00:00 GMT";}})()'
-            );
-        } catch(\Exception $e) {}
+            $this->executeScript($js);
+        } catch (\Exception $e) {
+            // ignore error
+        }
     }
 
     /**
@@ -151,68 +164,6 @@ class SahiDriver implements DriverInterface
     }
 
     /**
-     * Sets HTTP Basic authentication parameters
-     *
-     * @param string|Boolean $user     user name or false to disable authentication
-     * @param string         $password password
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function setBasicAuth($user, $password)
-    {
-        throw new UnsupportedDriverActionException('HTTP Basic authentication is not supported by %s', $this);
-    }
-
-    /**
-     * Switches to specific browser window.
-     *
-     * @param string $name window name (null for switching back to main window)
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function switchToWindow($name = null)
-    {
-        throw new UnsupportedDriverActionException('Window management is broken in Sahi, so %s does not support switching into windows', $this);
-    }
-
-    /**
-     * Switches to specific iFrame.
-     *
-     * @param string $name iframe name (null for switching back)
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function switchToIFrame($name = null)
-    {
-        throw new UnsupportedDriverActionException('Sahi does not have ability to switch into iFrames, so %s does not support it too', $this);
-    }
-
-    /**
-     * Sets specific request header on client.
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function setRequestHeader($name, $value)
-    {
-        throw new UnsupportedDriverActionException('Request headers manipulation is not supported by %s', $this);
-    }
-
-    /**
-     * Returns last response headers.
-     *
-     * @return array
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function getResponseHeaders()
-    {
-        throw new UnsupportedDriverActionException('Response headers manipulation is not supported by %s', $this);
-    }
-
-    /**
      * Sets cookie.
      *
      * @param string $name
@@ -221,12 +172,37 @@ class SahiDriver implements DriverInterface
     public function setCookie($name, $value = null)
     {
         if (null === $value) {
-            try {
-                $this->executeScript(sprintf('_sahi._deleteCookie("%s")', $name));
-            } catch (ConnectionException $e) {}
+            $this->deleteCookie($name);
         } else {
             $value = str_replace('"', '\\"', $value);
             $this->executeScript(sprintf('_sahi._createCookie("%s", "%s")', $name, $value));
+        }
+    }
+
+    /**
+     * Deletes a cookie by name.
+     *
+     * @param string $name Cookie name.
+     */
+    protected function deleteCookie($name)
+    {
+        $nameEscaped = json_encode($name);
+
+        $js = <<<JS
+(function(){
+    var path = location.pathname;
+
+    do {
+        document.cookie = {$nameEscaped} + '=; path=' + path + '; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        path = path.replace(/.$/, '');
+    } while (path);
+})()
+JS;
+
+        try {
+            $this->executeScript($js);
+        } catch (\Exception $e) {
+            // ignore error
         }
     }
 
@@ -240,20 +216,14 @@ class SahiDriver implements DriverInterface
     public function getCookie($name)
     {
         try {
-            return urldecode($this->evaluateScript(sprintf('_sahi._cookie("%s")', $name)));
-        } catch (ConnectionException $e) {}
-    }
+            $cookieValue = $this->evaluateScript(sprintf('_sahi._cookie("%s")', $name));
 
-    /**
-     * Returns last response status code.
-     *
-     * @return integer
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function getStatusCode()
-    {
-        throw new UnsupportedDriverActionException('Status code reading is not supported by %s', $this);
+            return null === $cookieValue ? null : urldecode($cookieValue);
+        } catch (ConnectionException $e) {
+            // ignore error
+        }
+
+        return null;
     }
 
     /**
@@ -267,16 +237,6 @@ class SahiDriver implements DriverInterface
         $html = $this->removeSahiInjectionFromText($html);
 
         return "<html>\n$html\n</html>";
-    }
-
-    /**
-     * Capture a screenshot of the current window.
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function getScreenshot()
-    {
-        throw new UnsupportedDriverActionException('Screenshots are not supported by %s', $this);
     }
 
     /**
@@ -315,7 +275,7 @@ JS;
      */
     public function getTagName($xpath)
     {
-        return strtolower($this->client->findByXPath($this->prepareXPath($xpath))->getName());
+        return strtolower($this->client->findByXPath($xpath)->getName());
     }
 
     /**
@@ -328,7 +288,7 @@ JS;
     public function getText($xpath)
     {
         return $this->removeSahiInjectionFromText(
-            $this->client->findByXPath($this->prepareXPath($xpath))->getText()
+            $this->client->findByXPath($xpath)->getText()
         );
     }
 
@@ -341,7 +301,7 @@ JS;
      */
     public function getHtml($xpath)
     {
-        return $this->client->findByXPath($this->prepareXPath($xpath))->getHTML();
+        return $this->client->findByXPath($xpath)->getHTML();
     }
 
     /**
@@ -354,7 +314,7 @@ JS;
      */
     public function getAttribute($xpath, $name)
     {
-        return $this->client->findByXPath($this->prepareXPath($xpath))->getAttr($name);
+        return $this->client->findByXPath($xpath)->getAttr($name);
     }
 
     /**
@@ -366,8 +326,6 @@ JS;
      */
     public function getValue($xpath)
     {
-        $xpathEscaped = $this->prepareXPath($xpath);
-        
         $tag   = $this->getTagName($xpath);
         $type  = $this->getAttribute($xpath, 'type');
         $value = null;
@@ -399,38 +357,35 @@ JS;
                 return $this->evaluateScript($function);
             }
         } elseif ('checkbox' === $type) {
-            return $this->client->findByXPath($xpathEscaped)->isChecked();
+            return $this->isChecked($xpath);
         } elseif ('select' === $tag && 'multiple' === $this->getAttribute($xpath, 'multiple')) {
-            $name = $this->getAttribute($xpath, 'name');
+            $xpathEscaped = $this->prepareXPath($xpath);
 
             $function = <<<JS
 (function(){
-    for (var i = 0; i < document.forms.length; i++) {
-        if (document.forms[i].elements['{$name}']) {
-            var form = document.forms[i];
-            var node = form.elements['{$name}'];
-            var options = [];
-            for (var i = 0; i < node.options.length; i++) {
-                if (node.options[ i ].selected) {
-                    options.push(node.options[ i ].value);
-                }
+    var options = [],
+        node = _sahi._byXPath("({$xpathEscaped})[1]");
+
+        for (var i = 0; i < node.options.length; i++) {
+            if (node.options[ i ].selected) {
+                options.push(node.options[ i ].value);
             }
-            return options.join(",");
         }
-    }
-    return '';
+
+    return options.join(",");
 })()
 JS;
+
             $value = $this->evaluateScript($function);
 
             if ('' === $value || false === $value) {
                 return array();
-            } else {
-                return explode(',', $value);
             }
+
+            return explode(',', $value);
         }
 
-        return $this->client->findByXPath($xpathEscaped)->getValue();
+        return $this->client->findByXPath($xpath)->getValue();
     }
 
     /**
@@ -446,13 +401,13 @@ JS;
         if ('radio' === $type) {
             $this->selectRadioOption($xpath, $value);
         } elseif ('checkbox' === $type) {
-            if ((Boolean) $value) {
-                $this->client->findByXPath($this->prepareXPath($xpath))->check();
+            if ((boolean) $value) {
+                $this->check($xpath);
             } else {
-                $this->client->findByXPath($this->prepareXPath($xpath))->uncheck();
+                $this->uncheck($xpath);
             }
         } else {
-            $this->client->findByXPath($this->prepareXPath($xpath))->setValue($value);
+            $this->client->findByXPath($xpath)->setValue($value);
         }
     }
 
@@ -463,7 +418,7 @@ JS;
      */
     public function check($xpath)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->check();
+        $this->client->findByXPath($xpath)->check();
     }
 
     /**
@@ -473,7 +428,7 @@ JS;
      */
     public function uncheck($xpath)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->uncheck();
+        $this->client->findByXPath($xpath)->uncheck();
     }
 
     /**
@@ -485,7 +440,7 @@ JS;
      */
     public function isChecked($xpath)
     {
-        return $this->client->findByXPath($this->prepareXPath($xpath))->isChecked();
+        return $this->client->findByXPath($xpath)->isChecked();
     }
 
     /**
@@ -502,8 +457,20 @@ JS;
         if ('radio' === $type) {
             $this->selectRadioOption($xpath, $value);
         } else {
-            $this->client->findByXPath($this->prepareXPath($xpath))->choose($value, $multiple);
+            $this->client->findByXPath($xpath)->choose($value, $multiple);
         }
+    }
+
+    /**
+     * Checks whether select option, located by it's XPath query, is selected.
+     *
+     * @param string $xpath
+     *
+     * @return Boolean
+     */
+    public function isSelected($xpath)
+    {
+        return $this->client->findByXPath($xpath)->isSelected();
     }
 
     /**
@@ -513,7 +480,7 @@ JS;
      */
     public function click($xpath)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->click();
+        $this->client->findByXPath($xpath)->click();
     }
 
     /**
@@ -523,7 +490,7 @@ JS;
      */
     public function doubleClick($xpath)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->doubleClick();
+        $this->client->findByXPath($xpath)->doubleClick();
     }
 
     /**
@@ -533,7 +500,7 @@ JS;
      */
     public function rightClick($xpath)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->rightClick();
+        $this->client->findByXPath($xpath)->rightClick();
     }
 
     /**
@@ -544,7 +511,7 @@ JS;
      */
     public function attachFile($xpath, $path)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->setFile($path);
+        $this->client->findByXPath($xpath)->setFile($path);
     }
 
     /**
@@ -556,7 +523,7 @@ JS;
      */
     public function isVisible($xpath)
     {
-        return $this->client->findByXPath($this->prepareXPath($xpath))->isVisible();
+        return $this->client->findByXPath($xpath)->isVisible();
     }
 
     /**
@@ -566,7 +533,7 @@ JS;
      */
     public function mouseOver($xpath)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->mouseOver();
+        $this->client->findByXPath($xpath)->mouseOver();
     }
 
     /**
@@ -576,7 +543,7 @@ JS;
      */
     public function focus($xpath)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->focus();
+        $this->client->findByXPath($xpath)->focus();
     }
 
     /**
@@ -586,7 +553,7 @@ JS;
      */
     public function blur($xpath)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->blur();
+        $this->client->findByXPath($xpath)->blur();
     }
 
     /**
@@ -598,9 +565,7 @@ JS;
      */
     public function keyPress($xpath, $char, $modifier = null)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->keyPress(
-            $char, strtoupper($modifier)
-        );
+        $this->client->findByXPath($xpath)->keyPress($char, strtoupper($modifier));
     }
 
     /**
@@ -612,9 +577,7 @@ JS;
      */
     public function keyDown($xpath, $char, $modifier = null)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->keyDown(
-            $char, strtoupper($modifier)
-        );
+        $this->client->findByXPath($xpath)->keyDown($char, strtoupper($modifier));
     }
 
     /**
@@ -626,9 +589,7 @@ JS;
      */
     public function keyUp($xpath, $char, $modifier = null)
     {
-        $this->client->findByXPath($this->prepareXPath($xpath))->keyUp(
-            $char, strtoupper($modifier)
-        );
+        $this->client->findByXPath($xpath)->keyUp($char, strtoupper($modifier));
     }
 
     /**
@@ -639,8 +600,8 @@ JS;
      */
     public function dragTo($sourceXpath, $destinationXpath)
     {
-        $from = $this->client->findByXPath($this->prepareXPath($sourceXpath));
-        $to   = $this->client->findByXPath($this->prepareXPath($destinationXpath));
+        $from = $this->client->findByXPath($sourceXpath);
+        $to   = $this->client->findByXPath($destinationXpath);
 
         $from->dragDrop($to);
     }
@@ -652,6 +613,8 @@ JS;
      */
     public function executeScript($script)
     {
+        $script = $this->prepareScript($script);
+
         $this->client->getConnection()->executeJavascript($script);
     }
 
@@ -664,32 +627,32 @@ JS;
      */
     public function evaluateScript($script)
     {
+        $script = $this->prepareScript($script);
+
         return $this->client->getConnection()->evaluateJavascript($script);
     }
 
     /**
      * Waits some time or until JS condition turns true.
      *
-     * @param integer $time      time in milliseconds
+     * @param integer $timeout   timeout in milliseconds
      * @param string  $condition JS condition
+     *
+     * @return boolean
      */
-    public function wait($time, $condition)
+    public function wait($timeout, $condition)
     {
-        $this->client->wait($time, $condition);
+        return $this->client->wait($timeout, $condition);
     }
 
     /**
-     * Set the dimensions of the window.
+     * Submits the form.
      *
-     * @param integer $width set the window width, measured in pixels
-     * @param integer $height set the window height, measured in pixels
-     * @param string $name window name (null for the main window)
-     *
-     * @throws UnsupportedDriverActionException
+     * @param string $xpath Xpath.
      */
-    public function resizeWindow($width, $height, $name = null)
+    public function submitForm($xpath)
     {
-        throw new UnsupportedDriverActionException('Window resizing is not supported by %s', $this);
+        $this->client->findByXPath($xpath)->submitForm();
     }
 
     /**
@@ -700,7 +663,7 @@ JS;
      */
     private function selectRadioOption($xpath, $value)
     {
-        $name = $this->getAttribute($this->prepareXPath($xpath), 'name');
+        $name = $this->getAttribute($xpath, 'name');
 
         if (null !== $name) {
             $function = <<<JS
@@ -751,7 +714,22 @@ JS;
      */
     private function prepareXPath($xpath)
     {
-        return strtr($xpath, array('"' => '\\"'));
+        return substr(json_encode((string)$xpath), 1, -1);
+    }
+
+    /**
+     * Prepare script to be sent via Sahi proxy.
+     *
+     * @param string $script
+     *
+     * @return string
+     */
+    private function prepareScript($script)
+    {
+        $script = preg_replace('/^return\s+/', '', $script);
+        $script = preg_replace('/;$/', '', $script);
+
+        return $script;
     }
 
     /**

@@ -1,10 +1,5 @@
 <?php
 
-namespace Behat\SahiClient\Accessor;
-
-use Behat\SahiClient\Connection;
-use Behat\SahiClient\Exception;
-
 /*
  * This file is part of the Behat\SahiClient.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -12,6 +7,10 @@ use Behat\SahiClient\Exception;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\SahiClient\Accessor;
+
+use Behat\SahiClient\Connection;
 
 /**
  * Abstract Element Accessor.
@@ -23,16 +22,16 @@ abstract class AbstractDomAccessor extends AbstractRelationalAccessor
     /**
      * Element identifier
      *
-     * @var     string
+     * @var string
      */
-    protected   $id;
+    protected $id;
 
     /**
      * Initialize Accessor.
      *
-     * @param   string      $id         element identifier (if null - "0" will be used)
-     * @param   array       $relations  relations array array('near' => accessor, 'under' => accessor)
-     * @param   Connection  $con        Sahi connection
+     * @param string     $id        element identifier (if null - "0" will be used)
+     * @param array      $relations relations array array('near' => accessor, 'under' => accessor)
+     * @param Connection $con       Sahi connection
      */
     public function __construct($id, array $relations, Connection $con)
     {
@@ -48,7 +47,7 @@ abstract class AbstractDomAccessor extends AbstractRelationalAccessor
     /**
      * Return DOM element type.
      *
-     * @return  string
+     * @return string
      */
     abstract public function getType();
 
@@ -63,7 +62,7 @@ abstract class AbstractDomAccessor extends AbstractRelationalAccessor
     /**
      * Return comma separated Sahi DOM arguments.
      *
-     * @return  string
+     * @return string
      */
     protected function getArgumentsString()
     {
@@ -79,9 +78,7 @@ abstract class AbstractDomAccessor extends AbstractRelationalAccessor
     /**
      * Convert identificator to JavaScript id instruction.
      *
-     * @param   mixed   $id element identificator
-     *
-     * @return  string              JavaScript id instruction
+     * @return string JavaScript id instruction
      */
     private function getIdentifierArgumentString()
     {
@@ -89,10 +86,6 @@ abstract class AbstractDomAccessor extends AbstractRelationalAccessor
             return '0';
         }
 
-        if (is_float($this->id) || is_int($this->id)) {
-            return $this->id;
-        }
-
-        return '"' . $this->id . '"';
+        return json_encode($this->id);
     }
 }

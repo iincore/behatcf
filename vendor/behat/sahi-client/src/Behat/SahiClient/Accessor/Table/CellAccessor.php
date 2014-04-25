@@ -1,11 +1,5 @@
 <?php
 
-namespace Behat\SahiClient\Accessor\Table;
-
-use Behat\SahiClient\Connection;
-use Behat\SahiClient\Accessor\AbstractDomAccessor;
-use Behat\SahiClient\Exception;
-
 /*
  * This file is part of the Behat\SahiClient.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -14,6 +8,11 @@ use Behat\SahiClient\Exception;
  * file that was distributed with this source code.
  */
 
+namespace Behat\SahiClient\Accessor\Table;
+
+use Behat\SahiClient\Connection;
+use Behat\SahiClient\Accessor\AbstractDomAccessor;
+
 /**
  * Cell Element Accessor.
  *
@@ -21,16 +20,18 @@ use Behat\SahiClient\Exception;
  */
 class CellAccessor extends AbstractDomAccessor
 {
-    private     $table;
-    private     $rowText;
-    private     $colText;
+    private $table;
+    private $rowText;
+    private $colText;
 
     /**
      * Initialize Accessor.
      *
-     * @param   string|array    $id         simple element identifier or array of (Table, rowText, colText)
-     * @param   array           $relations  relations array array('near' => accessor, 'under' => accessor)
-     * @param   Connection      $con        Sahi connection
+     * @param string|array $id        simple element identifier or array of (Table, rowText, colText)
+     * @param array        $relations relations array array('near' => accessor, 'under' => accessor)
+     * @param Connection   $con       Sahi connection
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($id, array $relations, Connection $con)
     {
@@ -65,8 +66,8 @@ class CellAccessor extends AbstractDomAccessor
         if (null !== $this->table) {
             $arguments   = array();
             $arguments[] = $this->table->getAccessor();
-            $arguments[] = '"' . str_replace('"', '\"', $this->rowText) . '"';
-            $arguments[] = '"' . str_replace('"', '\"', $this->colText) . '"';
+            $arguments[] = json_encode($this->rowText);
+            $arguments[] = json_encode($this->colText);
 
             if ($this->hasRelations()) {
                 $arguments[] = $this->getRelationArgumentsString();

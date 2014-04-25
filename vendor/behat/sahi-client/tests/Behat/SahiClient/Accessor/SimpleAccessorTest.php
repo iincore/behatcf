@@ -2,11 +2,9 @@
 
 namespace Test\Behat\SahiClient\Accessor;
 
-require_once 'AbstractAccessorTest.php';
-
 use Behat\SahiClient\Accessor;
 
-class AccessorTest extends AbstractAccessorTest
+class SimpleAccessorTest extends AbstractAccessorTest
 {
     private $con;
 
@@ -52,9 +50,18 @@ class AccessorTest extends AbstractAccessorTest
     {
         $accessor = new Accessor\ByXPathAccessor('//tr[1]/td[2]', array(), $this->con);
 
-        $this->assertEquals('_sahi._byXPath("//tr[1]/td[2]")', $accessor->getAccessor());
+        $this->assertEquals('_sahi._byXPath("\/\/tr[1]\/td[2]")', $accessor->getAccessor());
         $this->assertSame($this->con, $accessor->getConnection());
-        $this->assertRelations($accessor, '_sahi._byXPath("//tr[1]/td[2]", ');
+        $this->assertRelations($accessor, '_sahi._byXPath("\/\/tr[1]\/td[2]", ');
+    }
+
+    public function testByMultilineXPath()
+    {
+        $accessor = new Accessor\ByXPathAccessor("//tr[1]\n/td[2]", array(), $this->con);
+
+        $this->assertEquals('_sahi._byXPath("\/\/tr[1]\n\/td[2]")', $accessor->getAccessor());
+        $this->assertSame($this->con, $accessor->getConnection());
+        $this->assertRelations($accessor, '_sahi._byXPath("\/\/tr[1]\n\/td[2]", ');
     }
 
     public function testDiv()

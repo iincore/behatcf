@@ -6,11 +6,12 @@ use Buzz\Browser;
 use Buzz\Message;
 use Buzz\Listener;
 use Behat\SahiClient\Connection;
-require_once 'ClientQueue.php';
-require_once 'ExtendedJournal.php';
 
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Browser
+     */
     private $browser;
 
     public function setUp()
@@ -45,14 +46,13 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(2, count($this->browser->getListener()->getJournal()));
 
-        $request    = $this->browser->getListener()->getJournal()->getFirst()->getRequest();
-        $response   = $this->browser->getListener()->getJournal()->getFirst()->getResponse();
+        $request = $this->browser->getListener()->getJournal()->getFirst()->getRequest();
         $this->assertEquals('http://localhost:9999/_s_/dyn/Driver_setStep', $request->getUrl());
         $this->assertContains('step=' . urlencode('_sahi._clearLastAlert()'), $request->getContent());
     }
 
     /**
-     * @expectedException   Behat\SahiClient\Exception\ConnectionException
+     * @expectedException \Behat\SahiClient\Exception\ConnectionException
      */
     public function testExecuteStepFail()
     {
@@ -84,7 +84,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $response   = $this->browser->getListener()->getJournal()->getLastResponse();
         $this->assertEquals('http://localhost:9999/_s_/dyn/Driver_getVariable', $request->getUrl());
         $this->assertContains('key=___lastValue___', $request->getContent());
-        $this->assertEquals('25' , $response->getContent());
+        $this->assertEquals('25', $response->getContent());
     }
 
     public function testLongExecuteJavascript()
@@ -109,11 +109,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $response   = $this->browser->getListener()->getJournal()->getLastResponse();
         $this->assertEquals('http://localhost:9999/_s_/dyn/Driver_getVariable', $request->getUrl());
         $this->assertContains('key=___lastValue___', $request->getContent());
-        $this->assertEquals('22' , $response->getContent());
+        $this->assertEquals('22', $response->getContent());
     }
 
     /**
-     * @expectedException   Behat\SahiClient\Exception\ConnectionException
+     * @expectedException \Behat\SahiClient\Exception\ConnectionException
      */
     public function tesExecuteJavascriptError()
     {
@@ -147,10 +147,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     /**
      * Create new Response.
      *
-     * @param   string  $status     response status description
-     * @param   string  $content    content
+     * @param string $status  response status description
+     * @param string $content content
      *
-     * @return  Response
+     * @return Message\Response
      */
     protected function createResponse($status, $content = null)
     {
@@ -167,10 +167,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     /**
      * Create Sahi API Connection with custom SID.
      *
-     * @param   string  $sid        sahi id
-     * @param   boolean $correct    add correct responses to browser Queue for browser creation
+     * @param string  $sid     sahi id
+     * @param Browser $browser
+     * @param boolean $correct add correct responses to browser Queue for browser creation
      *
-     * @return  Driver
+     * @return Connection
      */
     protected function createConnection($sid, Browser $browser, $correct = false)
     {

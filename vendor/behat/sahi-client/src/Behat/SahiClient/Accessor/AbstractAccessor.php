@@ -1,9 +1,5 @@
 <?php
 
-namespace Behat\SahiClient\Accessor;
-
-use Behat\SahiClient\Connection;
-
 /*
  * This file is part of the Behat\SahiClient.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -11,6 +7,10 @@ use Behat\SahiClient\Connection;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\SahiClient\Accessor;
+
+use Behat\SahiClient\Connection;
 
 /**
  * Abstract Accessor.
@@ -20,16 +20,16 @@ use Behat\SahiClient\Connection;
 abstract class AbstractAccessor
 {
     /**
-     * Sahi Driver instance.
+     * Sahi Connection instance.
      *
-     * @var     Driver
+     * @var Connection
      */
-    protected   $con;
+    protected $con;
 
     /**
      * Initialize Accessor.
      *
-     * @param   Connection  $con    Sahi Connection
+     * @param Connection $con Sahi Connection
      */
     public function __construct(Connection $con)
     {
@@ -39,7 +39,7 @@ abstract class AbstractAccessor
     /**
      * Set Sahi Connection.
      *
-     * @param   Connection  $con    Sahi Connection
+     * @param Connection $con Sahi Connection
      */
     public function setConnection(Connection $con)
     {
@@ -49,7 +49,7 @@ abstract class AbstractAccessor
     /**
      * Return Accessor active connection instance.
      *
-     * @return  Connection
+     * @return Connection
      */
     public function getConnection()
     {
@@ -67,11 +67,11 @@ abstract class AbstractAccessor
     /**
      * Return true if checkbox/radio checked.
      *
-     * @return  boolean
+     * @return boolean
      */
     public function isChecked()
     {
-        return "true" === $this->con->evaluateJavascript(sprintf('%s.checked', $this->getAccessor()));
+        return $this->con->evaluateJavascript(sprintf('%s.checked', $this->getAccessor()));
     }
 
     /**
@@ -83,9 +83,19 @@ abstract class AbstractAccessor
     }
 
     /**
+     * Return true if option selected.
+     *
+     * @return boolean
+     */
+    public function isSelected()
+    {
+        return $this->con->evaluateJavascript(sprintf('%s.selected', $this->getAccessor()));
+    }
+
+    /**
      * Return selected text from selectbox.
      *
-     * @return  string
+     * @return string
      */
     public function getSelectedText()
     {
@@ -95,11 +105,12 @@ abstract class AbstractAccessor
     /**
      * Choose option in select box.
      *
-     * @param   string  $val    option value
+     * @param string       $val        option value
+     * @param boolean|null $isMultiple is multiple
      */
     public function choose($val, $isMultiple = null)
     {
-        $arguments = array('"' . str_replace('"', '\"', $val) . '"');
+        $arguments = array(json_encode($val));
         if (null !== $isMultiple) {
             $arguments[] = (bool) $isMultiple ? 'true' : 'false';
         }
@@ -112,12 +123,12 @@ abstract class AbstractAccessor
     /**
      * Emulate setting filepath in a file input.
      *
-     * @param   string  $path   file path
+     * @param string $path file path
      */
     public function setFile($path)
     {
         $this->con->executeStep(
-            sprintf('_sahi._setFile(%s, "%s")', $this->getAccessor(), str_replace('"', '\"', $path))
+            sprintf('_sahi._setFile(%s, %s)', $this->getAccessor(), json_encode($path))
         );
     }
 
@@ -180,7 +191,7 @@ abstract class AbstractAccessor
     /**
      * Drag'n'Drop current element onto another.
      *
-     * @param   AbstractAccessor    $to destination element
+     * @param AbstractAccessor $to destination element
      */
     public function dragDrop(AbstractAccessor $to)
     {
@@ -190,9 +201,9 @@ abstract class AbstractAccessor
     /**
      * Drag'n'Drop current element into X,Y.
      *
-     * @param   integer $x          X
-     * @param   integer $y          Y
-     * @param   boolean $relative   relativity of position
+     * @param integer $x        X
+     * @param integer $y        Y
+     * @param boolean|null $relative relativity of position
      */
     public function dragDropXY($x, $y, $relative = null)
     {
@@ -210,7 +221,7 @@ abstract class AbstractAccessor
     /**
      * Simulate event.
      *
-     * @param   string  $event   notify event on object
+     * @param string $event notify event on object
      */
     public function simulateEvent($event)
     {
@@ -220,8 +231,8 @@ abstract class AbstractAccessor
     /**
      * Simulate keypress event.
      *
-     * @param   string  $charInfo   a char (eg. ‘b’) OR charCode (eg. 98) OR array(13,13) for pressing ENTER
-     * @param   string  $combo      CTRL|ALT|SHIFT|META
+     * @param string $charInfo a char (eg. ‘b’) OR charCode (eg. 98) OR array(13,13) for pressing ENTER
+     * @param string $combo    CTRL|ALT|SHIFT|META
      */
     public function keyPress($charInfo, $combo = null)
     {
@@ -233,8 +244,8 @@ abstract class AbstractAccessor
     /**
      * Simulate keypress event.
      *
-     * @param   string  $charInfo   a char (eg. ‘b’) OR charCode (eg. 98) OR array(13,13) for pressing ENTER
-     * @param   string  $combo      CTRL|ALT|SHIFT|META
+     * @param string $charInfo a char (eg. ‘b’) OR charCode (eg. 98) OR array(13,13) for pressing ENTER
+     * @param string $combo    CTRL|ALT|SHIFT|META
      */
     public function keyDown($charInfo, $combo = null)
     {
@@ -246,8 +257,8 @@ abstract class AbstractAccessor
     /**
      * Simulate keypress event.
      *
-     * @param   string  $charInfo   a char (eg. ‘b’) OR charCode (eg. 98) OR array(13,13) for pressing ENTER
-     * @param   string  $combo      CTRL|ALT|SHIFT|META
+     * @param string $charInfo a char (eg. ‘b’) OR charCode (eg. 98) OR array(13,13) for pressing ENTER
+     * @param string $combo    CTRL|ALT|SHIFT|META
      */
     public function keyUp($charInfo, $combo = null)
     {
@@ -259,19 +270,19 @@ abstract class AbstractAccessor
     /**
      * Set text value.
      *
-     * @param   string  $val    value
+     * @param string $val value
      */
     public function setValue($val)
     {
         $this->con->executeStep(
-            sprintf('_sahi._setValue(%s, "%s")', $this->getAccessor(), str_replace('"', '\"', $val))
+            sprintf('_sahi._setValue(%s, %s)', $this->getAccessor(), json_encode($val))
         );
     }
 
     /**
      * Return current text value.
      *
-     * @return  string
+     * @return string
      */
     public function getValue()
     {
@@ -281,7 +292,7 @@ abstract class AbstractAccessor
     /**
      * Return node name.
      *
-     * @return  string
+     * @return string
      */
     public function getName()
     {
@@ -291,19 +302,26 @@ abstract class AbstractAccessor
     /**
      * Return attribute value.
      *
-     * @param   string  $attr   attribute name
+     * @param string $attr attribute name
      *
-     * @return  string
+     * @return string
      */
     public function getAttr($attr)
     {
-        return $this->con->evaluateJavascript(sprintf('%s.getAttribute("%s")', $this->getAccessor(), $attr));
+        $attributeValue = $this->con->evaluateJavascript(sprintf('%s.getAttribute(%s)', $this->getAccessor(), json_encode($attr)));
+
+        if ($attributeValue === false) {
+            // see https://github.com/kriswallsmith/Buzz/pull/138 bug
+            return '';
+        }
+
+        return $attributeValue;
     }
 
     /**
      * Return inner text of element.
      *
-     * @return  string
+     * @return string
      */
     public function getText()
     {
@@ -313,7 +331,7 @@ abstract class AbstractAccessor
     /**
      * Return inner text of element.
      *
-     * @return  string
+     * @return string
      */
     public function getHTML()
     {
@@ -331,34 +349,44 @@ abstract class AbstractAccessor
     /**
      * Return true if the element is visible on the user interface.
      *
-     * @return  boolean
+     * @return boolean
      */
     public function isVisible()
     {
-        return 'true' === $this->con->evaluateJavascript(sprintf('_sahi._isVisible(%s)', $this->getAccessor()));
+        return $this->con->evaluateJavascript(sprintf('_sahi._isVisible(%s)', $this->getAccessor()));
     }
 
     /**
      * Return true if the element is visible on the user interface.
      *
-     * @return  boolean
+     * @return boolean
      */
     public function isExists()
     {
-        return 'true' === $this->con->evaluateJavascript(sprintf('_sahi._exists(%s)', $this->getAccessor()));
+        return $this->con->evaluateJavascript(sprintf('_sahi._exists(%s)', $this->getAccessor()));
+    }
+
+    /**
+     * Return true if checkbox/radio checked.
+     *
+     * @return boolean
+     */
+    public function submitForm()
+    {
+        $this->con->evaluateJavascript(sprintf('%s.submit()', $this->getAccessor()));
     }
 
     /**
      * Return accessor string.
      *
-     * @return  string
+     * @return string
      */
     abstract public function getAccessor();
 
     /**
      * Return accessor string.
      *
-     * @return  string
+     * @return string
      */
     public function __toString()
     {
@@ -368,27 +396,19 @@ abstract class AbstractAccessor
     /**
      * Return Key arguments string.
      *
-     * @param   string  $charInfo   a char (eg. ‘b’) OR charCode (eg. 98) OR array(13,13) for pressing ENTER
-     * @param   string  $combo      CTRL|ALT|SHIFT|META
+     * @param string $charInfo a char (eg. ‘b’) OR charCode (eg. 98) OR array(13,13) for pressing ENTER
+     * @param string $combo    CTRL|ALT|SHIFT|META
      *
-     * @return  string
+     * @return string
      */
     private function getKeyArgumentsString($charInfo, $combo)
     {
-        $arguments = array();
-
-        if (is_array($charInfo)) {
-            $arguments[] = '[' . implode(',', $charInfo) . ']';
-        } elseif (is_string($charInfo)) {
-            $arguments[] = '"' . $charInfo . '"';
-        } else {
-            $arguments[] = $charInfo;
-        }
+        $arguments = json_encode($charInfo);
 
         if (null !== $combo) {
-            $arguments[] = '"' . $combo . '"';
+            $arguments .= ', ' . json_encode($combo);
         }
 
-        return implode(', ', $arguments);
+        return $arguments;
     }
 }

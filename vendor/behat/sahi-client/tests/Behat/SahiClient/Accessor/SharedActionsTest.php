@@ -2,8 +2,6 @@
 
 namespace Test\Behat\SahiClient\Accessor;
 
-require_once 'AbstractAccessorTest.php';
-
 use Behat\SahiClient\Accessor;
 
 class SharedActionsTest extends AbstractAccessorTest
@@ -25,7 +23,7 @@ class SharedActionsTest extends AbstractAccessorTest
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testClickActions(Accessor\AbstractAccessor $accessor, $selector)
     {
@@ -35,7 +33,7 @@ class SharedActionsTest extends AbstractAccessorTest
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testMouseAndFocusActions(Accessor\AbstractAccessor $accessor, $selector)
     {
@@ -46,7 +44,7 @@ class SharedActionsTest extends AbstractAccessorTest
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testDragDropActions(Accessor\AbstractAccessor $accessor, $selector)
     {
@@ -76,7 +74,7 @@ class SharedActionsTest extends AbstractAccessorTest
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testKeyActions(Accessor\AbstractAccessor $accessor, $selector)
     {
@@ -130,7 +128,7 @@ class SharedActionsTest extends AbstractAccessorTest
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testValueActions(Accessor\AbstractAccessor $accessor, $selector)
     {
@@ -141,36 +139,56 @@ class SharedActionsTest extends AbstractAccessorTest
         );
 
         $this->assertActionJavascript(
-            $selector . '.value', '23',
+            $selector . '.value',
+            '23',
             array($accessor, 'getValue')
         );
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testGetAttr(Accessor\AbstractAccessor $accessor, $selector)
     {
         $this->assertActionJavascript(
-            $selector . '.getAttribute("checked")', 'true',
+            $selector . '.getAttribute("checked")',
+            'checked',
             array($accessor, 'getAttr'),
             array('checked')
         );
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
+     */
+    public function testGetEmptyAttr(Accessor\AbstractAccessor $accessor, $selector)
+    {
+        $connection = $this->getConnectionMock();
+        $connection
+            ->expects($this->once())
+            ->method('evaluateJavascript')
+            ->with($selector . '.getAttribute("test-attr")')
+            ->will($this->returnValue(false));
+
+        $accessor->setConnection($connection);
+
+        $this->assertEquals('', $accessor->getAttr('test-attr'));
+    }
+
+    /**
+     * @dataProvider getAccessors
      */
     public function testGetText(Accessor\AbstractAccessor $accessor, $selector)
     {
         $this->assertActionJavascript(
-            '_sahi._getText(' . $selector . ')', 'Some text',
+            '_sahi._getText(' . $selector . ')',
+            'Some text',
             array($accessor, 'getText')
         );
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testHighlight(Accessor\AbstractAccessor $accessor, $selector)
     {
@@ -178,26 +196,40 @@ class SharedActionsTest extends AbstractAccessorTest
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testIsVisible(Accessor\AbstractAccessor $accessor, $selector)
     {
         $this->assertActionJavascript(
-            '_sahi._isVisible(' . $selector . ')', 'true',
+            '_sahi._isVisible(' . $selector . ')',
+            true,
             array($accessor, 'isVisible'),
-            array(), true
+            array()
         );
     }
 
     /**
-     * @dataProvider    getAccessors
+     * @dataProvider getAccessors
      */
     public function testExists(Accessor\AbstractAccessor $accessor, $selector)
     {
         $this->assertActionJavascript(
-            '_sahi._exists(' . $selector . ')', 'true',
+            '_sahi._exists(' . $selector . ')',
+            true,
             array($accessor, 'isExists'),
-            array(), true
+            array()
+        );
+    }
+
+    /**
+    * @dataProvider getAccessors
+    */
+    public function testSubmitForm(Accessor\AbstractAccessor $accessor, $selector)
+    {
+        $this->assertActionJavascript(
+            $selector . '.submit()',
+            null,
+            array($accessor, 'submitForm')
         );
     }
 }

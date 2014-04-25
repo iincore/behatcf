@@ -2,8 +2,6 @@
 
 namespace Test\Behat\SahiClient\Accessor;
 
-require_once 'AbstractAccessorTest.php';
-
 use Behat\SahiClient\Accessor;
 
 class FormAccessorTest extends AbstractAccessorTest
@@ -30,6 +28,14 @@ class FormAccessorTest extends AbstractAccessorTest
 
         $this->assertEquals('_sahi._option("Man")', $accessor->getAccessor());
         $this->assertSame($this->con, $accessor->getConnection());
+
+        $this->assertActionJavascript(
+            '_sahi._option("Man").selected',
+            true,
+            array($accessor, 'isSelected'),
+            array()
+        );
+
         $this->assertRelations($accessor, '_sahi._option("Man", ');
     }
 
@@ -41,9 +47,10 @@ class FormAccessorTest extends AbstractAccessorTest
         $this->assertSame($this->con, $accessor->getConnection());
         $this->assertActionStep('_sahi._check(_sahi._radio("id"))', array($accessor, 'check'));
         $this->assertActionJavascript(
-            '_sahi._radio("id").checked', 'true',
+            '_sahi._radio("id").checked',
+            true,
             array($accessor, 'isChecked'),
-            array(), true
+            array()
         );
         $this->assertRelations($accessor, '_sahi._radio("id", ');
     }
@@ -57,9 +64,10 @@ class FormAccessorTest extends AbstractAccessorTest
         $this->assertActionStep('_sahi._check(_sahi._checkbox("id"))', array($accessor, 'check'));
         $this->assertActionStep('_sahi._uncheck(_sahi._checkbox("id"))', array($accessor, 'uncheck'));
         $this->assertActionJavascript(
-            '_sahi._checkbox("id").checked', 'true',
+            '_sahi._checkbox("id").checked',
+            true,
             array($accessor, 'isChecked'),
-            array(), true
+            array()
         );
         $this->assertRelations($accessor, '_sahi._checkbox("id", ');
     }
@@ -71,7 +79,7 @@ class FormAccessorTest extends AbstractAccessorTest
         $this->assertEquals('_sahi._file("id")', $accessor->getAccessor());
         $this->assertSame($this->con, $accessor->getConnection());
         $this->assertActionStep(
-            '_sahi._setFile(_sahi._file("id"), "/tmp/simple.gif")',
+            '_sahi._setFile(_sahi._file("id"), "\/tmp\/simple.gif")',
             array($accessor, 'setFile'),
             array('/tmp/simple.gif')
         );
@@ -121,7 +129,8 @@ class FormAccessorTest extends AbstractAccessorTest
         $this->assertEquals('_sahi._select("city")', $accessor->getAccessor());
         $this->assertSame($this->con, $accessor->getConnection());
         $this->assertActionJavascript(
-            '_sahi._getSelectedText(_sahi._select("city"))', 'New York',
+            '_sahi._getSelectedText(_sahi._select("city"))',
+            'New York',
             array($accessor, 'getSelectedText')
         );
 
@@ -129,6 +138,12 @@ class FormAccessorTest extends AbstractAccessorTest
             '_sahi._setSelected(_sahi._select("city"), "Moscow")',
             array($accessor, 'choose'),
             array('Moscow')
+        );
+
+        $this->assertActionStep(
+            '_sahi._setSelected(_sahi._select("city"), "Moscow\nRussia")',
+            array($accessor, 'choose'),
+            array("Moscow\nRussia")
         );
 
         $this->assertActionStep(

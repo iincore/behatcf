@@ -1,10 +1,5 @@
 <?php
 
-namespace Behat\SahiClient\Accessor;
-
-use Behat\SahiClient\Exception;
-use Behat\SahiClient\Connection;
-
 /*
  * This file is part of the Behat\SahiClient.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -12,6 +7,10 @@ use Behat\SahiClient\Connection;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\SahiClient\Accessor;
+
+use Behat\SahiClient\Connection;
 
 /**
  * By XPath Accessor.
@@ -23,15 +22,16 @@ class ByXPathAccessor extends AbstractRelationalAccessor
     /**
      * XPath expression
      *
-     * @var     string
+     * @var string
      */
-    protected   $xpath;
+    protected $xpath;
 
     /**
      * Initialize Accessor.
      *
-     * @param   string      $xpath  XPath expression
-     * @param   Connection  $con    Sahi connection
+     * @param string     $xpath     XPath expression
+     * @param array      $relations Relations
+     * @param Connection $con       Sahi connection
      */
     public function __construct($xpath, array $relations, Connection $con)
     {
@@ -50,7 +50,7 @@ class ByXPathAccessor extends AbstractRelationalAccessor
     public function getAccessor()
     {
         $arguments   = array();
-        $arguments[] = '"' . $this->xpath . '"';
+        $arguments[] = json_encode($this->xpath);
         if ($this->hasRelations()) {
             $arguments[] = $this->getRelationArgumentsString();
         }

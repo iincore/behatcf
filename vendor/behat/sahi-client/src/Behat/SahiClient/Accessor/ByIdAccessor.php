@@ -1,10 +1,5 @@
 <?php
 
-namespace Behat\SahiClient\Accessor;
-
-use Behat\SahiClient\Exception;
-use Behat\SahiClient\Connection;
-
 /*
  * This file is part of the Behat\SahiClient.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -12,6 +7,10 @@ use Behat\SahiClient\Connection;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\SahiClient\Accessor;
+
+use Behat\SahiClient\Connection;
 
 /**
  * By Id Accessor.
@@ -23,15 +22,15 @@ class ByIdAccessor extends AbstractAccessor
     /**
      * Element ID
      *
-     * @var     string
+     * @var string
      */
-    protected   $id;
+    protected $id;
 
     /**
      * Initialize Accessor.
      *
-     * @param   string      $id     element ID
-     * @param   Connection  $con    Sahi connection
+     * @param string     $id  element ID
+     * @param Connection $con Sahi connection
      */
     public function __construct($id, Connection $con)
     {
@@ -45,6 +44,6 @@ class ByIdAccessor extends AbstractAccessor
      */
     public function getAccessor()
     {
-        return sprintf('_sahi._byId("%s")', $this->id);
+        return sprintf('_sahi._byId(%s)', json_encode($this->id));
     }
 }

@@ -1,11 +1,5 @@
 <?php
 
-namespace Behat\SahiClient;
-
-use Buzz;
-
-use Behat\SahiClient\Exception;
-
 /*
  * This file is part of the Behat\SahiClient.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -13,6 +7,10 @@ use Behat\SahiClient\Exception;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\SahiClient;
+
+use Buzz;
 
 /**
  * Sahi Connection Driver.
@@ -24,51 +22,55 @@ class Connection
     /**
      * Sahi SID
      *
-     * @var     integer
+     * @var integer
      */
-    private     $sid;
+    private $sid;
+
     /**
      * Is custom SID provided to connection
      *
-     * @var     Boolean
+     * @var Boolean
      */
-    private     $customSidProvided = false;
+    private $customSidProvided = false;
+
     /**
      * Sahi proxy hostname
      *
-     * @var     string
+     * @var string
      */
-    private     $host;
+    private $host;
+
     /**
      * Sahi proxy port number
      *
-     * @var     integer
+     * @var integer
      */
-    private     $port;
+    private $port;
+
     /**
      * Time limit to connection.
      *
-     * @var     integer
+     * @var integer
      */
-    private     $limit;
+    private $limit;
 
     /**
      * HTTP Browser instance.
      *
-     * @var     BrowserInterface
+     * @var Buzz\Browser
      */
-    protected   $browser;
+    protected $browser;
 
     /**
      * Initialize Sahi Driver.
      *
-     * @param   string      $sid        Sahi SID
-     * @param   string      $host       Sahi proxy host
-     * @param   integer     $port       Sahi proxy port
-     * @param   BuzzBrowser $browser    HTTP browser instance
-     * @param   integer     $limit      Time limit to connection
+     * @param string        $sid     Sahi SID
+     * @param string        $host    Sahi proxy host
+     * @param integer       $port    Sahi proxy port
+     * @param \Buzz\Browser $browser HTTP browser instance
+     * @param integer       $limit   Time limit to connection
      */
-    public function __construct($sid = null, $host = 'localhost', $port = 9999, Buzz\Browser $browser = null, $limit = 600)
+    public function __construct($sid = null, $host = 'localhost', $port = 9999, \Buzz\Browser $browser = null, $limit = 600)
     {
         $this->limit = $limit;
 
@@ -91,7 +93,7 @@ class Connection
     /**
      * Checks that connection used custom SID.
      *
-     * @return  Boolean
+     * @return Boolean
      */
     public function isCustomSidProvided()
     {
@@ -101,7 +103,7 @@ class Connection
     /**
      * Returns current connection SID.
      *
-     * @return  string
+     * @return string
      */
     public function getSid()
     {
@@ -111,7 +113,7 @@ class Connection
     /**
      * Starts browser.
      *
-     * @param   string  $browserName    (firefox, ie, safari, chrome, opera)
+     * @param string $browserName (firefox, ie, safari, chrome, opera)
      */
     public function start($browserName)
     {
@@ -139,7 +141,7 @@ class Connection
     /**
      * Checks whether Sahi proxy were started.
      *
-     * @return  Boolean
+     * @return Boolean
      */
     public function isProxyStarted()
     {
@@ -151,7 +153,7 @@ class Connection
     /**
      * Checks whether connection is ready.
      *
-     * @return  Boolean
+     * @return Boolean
      */
     public function isReady()
     {
@@ -161,7 +163,7 @@ class Connection
     /**
      * Return HTTP Browser instance.
      *
-     * @return  Browser
+     * @return Buzz\Browser
      */
     public function getBrowser()
     {
@@ -171,10 +173,12 @@ class Connection
     /**
      * Execute Sahi command & returns its response.
      *
-     * @param   string  $command        Sahi command
-     * @param   array   $parameters     parameters
+     * @param string $command    Sahi command
+     * @param array  $parameters parameters
      *
-     * @return  string                  command response
+     * @return string command response
+     *
+     * @throws Exception\ConnectionException
      */
     public function executeCommand($command, array $parameters = array())
     {
@@ -184,7 +188,7 @@ class Connection
         )->getContent();
 
         if (false !== strpos($content, 'SAHI_ERROR')) {
-            throw new Exception\ConnectionException('Sahi proxy error');
+            throw new Exception\ConnectionException('Sahi proxy error. Full response:' . PHP_EOL . $content);
         }
 
         return $content;
@@ -193,10 +197,10 @@ class Connection
     /**
      * Execute Sahi step.
      *
-     * @param   string  $step       step command
-     * @param   integer $limit      time limit (value of 10 === 1 second)
+     * @param string  $step  step command
+     * @param integer $limit time limit (value of 10 === 1 second)
      *
-     * @throws  BrowserException    if step execution has errors
+     * @throws Exception\ConnectionException if step execution has errors
      */
     public function executeStep($step, $limit = null)
     {
@@ -222,27 +226,29 @@ class Connection
     /**
      * Evaluates JS expression on the browser and returns it's value.
      *
-     * @param   string  $expression JS expression
-     * @param   integer $limit      time limit (value of 10 === 1 second)
+     * @param string  $expression JS expression
+     * @param integer $limit      time limit (value of 10 === 1 second)
      *
-     * @return  string|null
+     * @return mixed
      */
     public function evaluateJavascript($expression, $limit = null)
     {
         $key = '___lastValue___' . uniqid();
         $this->executeStep(
-            sprintf("_sahi.setServerVarPlain(%s, %s)", "'" . $key . "'", $expression), $limit
+            sprintf("_sahi.setServerVarPlain(%s, JSON.stringify(%s))", json_encode($key), $expression),
+            $limit
         );
 
         $resp = $this->executeCommand('getVariable', array('key' => $key));
 
-        return 'null' === $resp ? null : $resp;
+        return json_decode($resp, true);
     }
 
     /**
      * Execute JS expression on the browser.
      *
-     * @param   string  $expression JS expression
+     * @param string  $expression JS expression
+     * @param integer $limit      time limit (value of 10 === 1 second)
      */
     public function executeJavascript($expression, $limit = null)
     {
@@ -252,10 +258,10 @@ class Connection
     /**
      * Send POST request to specified URL.
      *
-     * @param   string  $url    URL
-     * @param   array   $query  POST query parameters
+     * @param string $url   URL
+     * @param array  $query POST query parameters
      *
-     * @return  string          response
+     * @return Buzz\Message\Response response
      */
     private function post($url, array $query = array())
     {
@@ -265,9 +271,9 @@ class Connection
     /**
      * Convert array parameters to POST parameters.
      *
-     * @param   array   $query  parameters
+     * @param array $query parameters
      *
-     * @return  string          query string (key1=val1&key2=val2)
+     * @return string query string (key1=val1&key2=val2)
      */
     private function prepareQueryString(array $query)
     {

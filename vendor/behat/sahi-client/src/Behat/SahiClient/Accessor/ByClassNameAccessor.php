@@ -1,10 +1,5 @@
 <?php
 
-namespace Behat\SahiClient\Accessor;
-
-use Behat\SahiClient\Exception;
-use Behat\SahiClient\Connection;
-
 /*
  * This file is part of the Behat\SahiClient.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -12,6 +7,10 @@ use Behat\SahiClient\Connection;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\SahiClient\Accessor;
+
+use Behat\SahiClient\Connection;
 
 /**
  * By Class Name Accessor.
@@ -23,23 +22,24 @@ class ByClassNameAccessor extends AbstractRelationalAccessor
     /**
      * Tag class
      *
-     * @var     string
+     * @var string
      */
-    protected   $class;
+    protected $class;
+
     /**
      * Tag name
      *
-     * @var     string
+     * @var string
      */
-    protected   $tag;
+    protected $tag;
 
     /**
      * Initialize Accessor.
      *
-     * @param   string      $class      tag class name
-     * @param   string      $tag        tag name
-     * @param   array       $relations  relations
-     * @param   Connection  $con        Sahi connection
+     * @param string     $class     tag class name
+     * @param string     $tag       tag name
+     * @param array      $relations relations
+     * @param Connection $con       Sahi connection
      */
     public function __construct($class, $tag, array $relations, Connection $con)
     {
@@ -59,8 +59,8 @@ class ByClassNameAccessor extends AbstractRelationalAccessor
     public function getAccessor()
     {
         $arguments   = array();
-        $arguments[] = '"' . $this->class . '"';
-        $arguments[] = '"' . $this->tag . '"';
+        $arguments[] = json_encode($this->class);
+        $arguments[] = json_encode($this->tag);
         if ($this->hasRelations()) {
             $arguments[] = $this->getRelationArgumentsString();
         }
