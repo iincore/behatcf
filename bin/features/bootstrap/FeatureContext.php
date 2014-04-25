@@ -38,6 +38,7 @@ class FeatureContext extends MinkContext
         $username = $this->replaceParameter($username);
         $password = $this->replaceParameter($password);
         return array(
+            new Step\When('I maximize the window'),
             new Step\When('I am on "/login"'),
             new Step\When('I fill in "username" with "'.$username.'"'),
             new Step\When('I fill in "password" with "'.$password.'"'),
@@ -351,12 +352,11 @@ class FeatureContext extends MinkContext
     }
 
     /**
-     * @Given /^I maximize the window "([^"]*)"$/
+     * @Given /^I maximize the window$/
      */
-    public function iMaximizeTheWindow($arg1)
+    public function iMaximizeTheWindow()
     {
-        $arg1 = $this->replaceParameter($arg1);
-        $this->getSession()->getDriver()->resizeWindow(1200, 800);
+        $this->getSession()->getDriver()->resizeWindow(1366, 768);
     }
 
     public function replaceParameter($param){
