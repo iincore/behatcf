@@ -20,8 +20,9 @@ Search with user id
   #
     When I click on the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[2]/div[4]/button[2]"
     Then I look for the output wait "30" seconds
-    When I follow "Full Time"
-    And I look for the output wait "30" seconds
+    When I follow "Intern"
+    And I look for the output wait "60" seconds
+    When I check text "Intern" in the element with xpath "//*[@id='studentInfo']/div/div[2]/div[2]/div[4]/button[1]"
   #
   #Update Bar status
   #

@@ -148,6 +148,28 @@ class FeatureContext extends MinkContext
         // ok, let's click on it
         $element->click();
     }
+
+    /**
+     * Click on the element with the provided xpath query
+     *
+     * @When /^I check text "([^"]*)" in the element with xpath "([^"]*)"$/
+     */
+    public function iCheckTextInTheElementWithXPath($text, $xpath)
+    {
+        $session = $this->getSession(); // get the mink session
+        $element = $session->getPage()->find(
+            'xpath',
+            $session->getSelectorsHandler()->selectorToXpath('xpath', $xpath)
+        ); // runs the actual query and returns the element
+
+        // errors must not pass silently
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not evaluate XPath: "%s"', $xpath));
+        }
+        if(trim($text) != trim($element->getText())){
+            throw new Exception($text . ' not find in element');
+        }
+    }
     /**
      * Click on the element with the provided CSS Selector
      *
