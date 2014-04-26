@@ -64,7 +64,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     {
         $arg1 = $this->replaceParameter($arg1);
         $arg2 = $this->replaceParameter($arg2);
-        $javascript = "$('#".$arg1."').val('". $arg2 ."')";
+        $javascript = "$('".$arg1."').val('". $arg2 ."')";
         $this->getSession()->executeScript($javascript);
     }
 
@@ -310,7 +310,7 @@ JS;
         catch(Exception $e) {
             throw new \Exception(sprintf('No iframe found in the element "%s" on the page "%s".', $arg1, $this->getSession()->getCurrentUrl()));
         }
-        
+
         $this->getSession()->wait(5000);
         $this->getSession()->switchToIFrame($id);
     }
