@@ -77,9 +77,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
         $arg2 = $this->replaceParameter($arg2);
         $javascript = <<<JS
             (function(){
-              var elems = document.getElementsByTagName('$arg1');
-              var f = elems[0];
-              document.write('$arg2');
+             document.body.innerHTML = $arg2;
             })()
 JS;
         $this->getSession()->executeScript($javascript);
