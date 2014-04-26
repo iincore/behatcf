@@ -243,7 +243,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     //If role is Student then go to 1 student ok, 2 employer Awk, 3 admin Awk
 
     /**
-     * @Given /^I check role of "([^"]*)" with "([^"]*)"$/
+     * @Then /^I check role of "([^"]*)" with "([^"]*)"$/
      */
     public function iCheckRoleOfWith($username, $role)
     {
