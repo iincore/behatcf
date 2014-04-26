@@ -79,7 +79,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
             (function(){
               var elems = document.getElementsByTagName('$arg1');
               var f = elems[0];
-              f.text = "$arg2";
+              document.write('$arg2');
             })()
 JS;
         $this->getSession()->executeScript($javascript);
