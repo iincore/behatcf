@@ -120,14 +120,6 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
         $field = $this->replaceParameter($field);
         $javascript = "$('".$field."').click()";
         $this->getSession()->executeScript($javascript);
-
-//        assertNotNull($this->find(
-//            'xpath',
-//            '//div[contains(@class, "notification-message") and contains(@class, "'.$type.'") and contains(., "'.$message.'")]'
-//        ), "Notification of type '$type' with message '$message' was not found on page");
-
-//          $this->getSession()->getPage()->find('css',
-//            'input[id="'.$field.'"]')->click();
     }
 
     /**
@@ -297,13 +289,22 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     }
 
     /**
-     * @Given /^I switch to window "([^"]*)"$/
+     * @Given /^I switch to iframe "([^"]*)"$/
      */
-    public function iSwitchToWindow($arg1)
+    public function iSwitchToIFrame($arg1)
     {
         $arg1 = $this->replaceParameter($arg1);
         $this->getSession()->wait(5000);
-        $this->getSession()->switchToWindow($arg1);
+        $this->getSession()->switchToIFrame($arg1);
+    }
+
+    /**
+     * @Given /^I switch back from iframe$/
+     */
+    public function iSwitchBackFromIFrame()
+    {
+        $this->getSession()->wait(5000);
+        $this->getSession()->switchToIFrame();
     }
 
     /**
@@ -350,26 +351,6 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
 
         return $last;
     }
-
-//    /**
-//     * Return the names of all open windows
-//     *
-//     * @return array    array of all open windows
-//     */
-//    public function getWindowNames()
-//    {
-//        return $this->getSession()->getDriver()->getWebDriverSession()->window_handles();
-//    }
-//
-//    /**
-//     * Return the name of the currently active window
-//     *
-//     * @return string    the name of the current window
-//     */
-//    public function getWindowName()
-//    {
-//        return $this->getSession()->getDriver()->getWebDriverSession()->window_handle();
-//    }
 
     /**
      * @Given /^I maximize the window$/
