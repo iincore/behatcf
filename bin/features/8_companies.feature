@@ -1,7 +1,8 @@
-Feature: collegefeed login
-  In order to access my profile on collegefeed
-  As a student
-  I need to login to the collegefeed
+Feature: Companies page
+  In order to search for the companies page student checks with companies page
+  a.search using company name
+  b.search with keyword for a company
+  c.go to desired company page
 
   Background:
 # Setup any feature dependencies
@@ -9,8 +10,8 @@ Feature: collegefeed login
 #@javascript
 
   @javascript
-  Scenario:Now the user is at pubile profile to fill All the sections in the page
-    Given I am logged in as "lakshana" and "collegefeed"
+  Scenario:Now the user is at companies page and searches for a desired company
+    Given I am logged in as "{username}" and "{password}"
     Then I should see "Dashboard"
     Then I look for the output wait "30" seconds
 

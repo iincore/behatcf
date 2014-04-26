@@ -1,7 +1,5 @@
-Feature: collegefeed login
-  In order to access my profile on collegefeed
-  As a student
-  I need to login to the collegefeed
+Feature: update settings of the user
+  Updateing student Profile and Account settings
 
   Background:
 # Setup any feature dependencies
@@ -10,7 +8,7 @@ Feature: collegefeed login
 
   @javascript
   Scenario:Now the user is at Settings page "Account Settings"
-    Given I am logged in as "lakshana" and "collegefeed"
+    Given I am logged in as "{username}" and "{password}"
     And I should see "Dashboard"
     When I click on the element with xpath "//div/div/div/div[2]/div/div/div[2]/button"
     And I follow "Settings"

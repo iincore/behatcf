@@ -1,7 +1,7 @@
-Feature: collegefeed login
-  In order to access my profile on collegefeed
-  As a student
-  I need to login to the collegefeed
+Feature: upload resume
+  In order to fill the user data in to collegefeed
+  user will upload the resume to update public profile
+
 
   Background:
 # Setup any feature dependencies
@@ -9,8 +9,8 @@ Feature: collegefeed login
 #@javascript
 
   @javascript
-  Scenario:Now the user is at pubile profile to fill All the sections in the page
-    Given I am logged in as "lakshana" and "collegefeed"
+  Scenario:Now the user is at dashboard to upload resume
+    Given I am logged in as "{username}" and "{password}"
     And I should see "Dashboard"
     When I follow "upload-resume"
     And I look for the output wait "200" seconds

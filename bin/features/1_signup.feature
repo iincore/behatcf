@@ -3,29 +3,21 @@ Feature: collegefeed sign up
 	As a student
 	I need to be able to sign up to the collegefeed
 
-Background:
-	# Setup any feature dependencies
+ @javascript
+Scenario: Sign up to collegefeed
+	Given I am on "/register/"
+	And I fill in "email_1click" with "{signup_email}"
+	And I fill in "passwd_1click" with "{password}"
+	Then I press "Sign up"
+	And I should see "Welcome to collegefeed!"
+#
+#Enter student school details
+#
 
-Scenario: Sign up to collegefeed using good data
-	Given I am on "register/"
-	And I fill in "email" with "parvinder@mywebsite.com"
-	And I fill in "password" with "parv123"
-	Then I press "_submit"
-	And I should be on "signup.php"
-	And I should see "Thanks for signing up! A million marketing emails are on the way!"
-	And I should not see "Uncheck this tickbox"
+   When I fill in "cf_studentbundle_usernamegraduationtype_schoolRecord_university" with "Stanford University"
+   And I fill in "cf_studentbundle_usernamegraduationtype_schoolRecord_major" with "{signup_email}"
+   And I fill in "email_1click" with "{signup_email}"
 
-Scenario: try and sign up in collegefeed but typo in email
-	Given I am on "register/"
-	And I fill in "email" with "adfsadfsa#ymail.com"
-    And I fill in "password" with "parv123"
-	Then I press "_submit"
-	And I should be on "register/"
-	And I should see "Please, enter a valid email"
 
-Scenario: try and sign up in collegefeed but forgot to enter password
-    Given I am on "register/"
-    And I fill in "email" with "adfsadfsa#ymail.com"
-    Then I press "_submit"
-    And I should be on "register/"
-    And I should see "Please, enter a valid password"
+
+

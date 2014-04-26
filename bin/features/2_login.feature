@@ -11,8 +11,8 @@ Feature: collegefeed login
   @javascript
   Scenario: Login to collegefeed using good data
     Given I am on "/login"
-    When I fill in "username" with "lakshana"
-    And I fill in "password" with "collegefeed"
+    When I fill in "username" with "{username}"
+    And I fill in "password" with "{password}"
     Then I press "_submit"
     And I should see "Dashboard"
     When I follow "Profile"

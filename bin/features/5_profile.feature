@@ -1,7 +1,6 @@
-Feature: collegefeed login
-  In order to access my profile on collegefeed
-  As a student
-  I need to login to the collegefeed
+Feature: public profile update
+  In order to update the public profile user need to access public profile
+  and updates all the sections of profile
 
   Background:
 # Setup any feature dependencies
@@ -10,10 +9,10 @@ Feature: collegefeed login
 
   @javascript
   Scenario:Now the user is at pubile profile to fill All the sections in the page
-    Given I am logged in as "lakshana" and "collegefeed"
-    And I should see "Lakshana Pant"
-    Given I am on "/profile/lakshana"
-    And I should see "Public profile"
+    Given I am logged in as "{username}" and "{password}"
+    And I should see "Dashboard"
+    When I follow "Profile"
+    Then I should see "Public profile"
   #
   #Edit Name
   #
@@ -24,7 +23,7 @@ Feature: collegefeed login
     When I click on field "#edit-name-inline > button.btn-save"
     And I look for the output wait "60" seconds
   #
-  #About
+  #About me
   #
     When I click on field "#profile-contents > div > div:nth-child(1) > a.edit-section"
     Then I look for the output wait "30" seconds

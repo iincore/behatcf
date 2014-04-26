@@ -1,7 +1,8 @@
-Feature: collegefeed login
-  In order to access my profile on collegefeed
-  As a student
-  I need to login to the collegefeed
+Feature: Jobs page
+  In order to search for a desired job go to jobs page
+  a. Search for Full time and Internship
+  b. Search for Full time
+  c. Search for Intern
 
   Background:
 # Setup any feature dependencies
@@ -10,7 +11,7 @@ Feature: collegefeed login
 
   @javascript
   Scenario:User fills in all the fields in interview notes page
-    Given I am logged in as "lakshana" and "collegefeed"
+    Given I am logged in as "{username}" and "{password}"
     And I should see "Dashboard"
     When I follow "Jobs"
     And I look for the output wait "80" seconds
@@ -25,7 +26,7 @@ Feature: collegefeed login
     And I look for the output wait "80" seconds
     And I should see "Search Results for"
 #
-# Search for Fulltime and Internship
+# Search for Fulltime
 #
 
     When I fill in "keyword" with "software engineer"

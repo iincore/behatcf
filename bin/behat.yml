@@ -6,6 +6,7 @@ default:
   context:
     class:                            'FeatureContext'
     parameters :
+          signup_email: test@iincore.com
           username: lakshana
           password : collegefeed
           db: cf_feeds

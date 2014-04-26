@@ -1,7 +1,7 @@
-Feature: collegefeed login
-  In order to access my profile on collegefeed
-  As a student
-  I need to login to the collegefeed
+Feature: Interview notes page
+  In order to enter personal interview experiance go to interview notes page
+  a.Enter user notes using "Add your own Interview Experience"
+  b.Search for the submitted record
 
   Background:
 # Setup any feature dependencies
@@ -10,7 +10,7 @@ Feature: collegefeed login
 
   @javascript
   Scenario:User fills in all the fields in interview notes page
-    Given I am logged in as "lakshana" and "collegefeed"
+    Given I am logged in as "{username}" and "{password}"
     And I should see "Dashboard"
     When I follow "Interview Notes"
     And I look for the output wait "80" seconds

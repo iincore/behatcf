@@ -1,7 +1,7 @@
-Feature: collegefeed login
-  In order to access my profile on collegefeed
+Feature: dashboard feature
+  In order check with the collegefeed profile
   As a student
-  I need to login to the collegefeed
+  I need to login in as a student role in to the collegefeed and i need to access the dashboard
 
   Background:
 # Setup any feature dependencies
@@ -9,8 +9,8 @@ Feature: collegefeed login
 #@javascript
 
   @javascript
-  Scenario:Now the user is at pubile profile to fill All the sections in the page
-    Given I am logged in as "lakshana" and "collegefeed"
+  Scenario:Now the user is at dash board to see the updates of collegefeed
+    Given I am logged in as "{username}" and "{password}"
     And I should see "Dashboard"
 
   #
