@@ -289,7 +289,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     }
 
     /**
-     * @Given /^I switch to iframe "([^"]*)"$/
+     * @When /^I switch to iframe "([^"]*)"$/
      */
     public function iSwitchToIFrame($arg1)
     {
