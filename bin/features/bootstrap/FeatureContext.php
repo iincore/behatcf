@@ -69,6 +69,23 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     }
 
     /**
+     * @When /^I set value in using "([^"]*)" tag with "([^"]*)"$/
+     */
+    public function iSetValueUsingTagWith($arg1, $arg2)
+    {
+        $arg1 = $this->replaceParameter($arg1);
+        $arg2 = $this->replaceParameter($arg2);
+        $javascript = <<<JS
+            (function(){
+              var elems = document.getElementsByTagName('$arg1');
+              var f = elems[0];
+              f.text = "$arg2";
+            })()
+JS;
+        $this->getSession()->executeScript($javascript);
+    }
+
+    /**
      * @Given /^I change field "([^"]*)" value with "([^"]*)"$/
      */
     public function iChangeFieldValueWith($field, $value)
