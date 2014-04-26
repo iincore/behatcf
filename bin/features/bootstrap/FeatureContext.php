@@ -294,8 +294,25 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     public function iSwitchToIFrame($arg1)
     {
         $arg1 = $this->replaceParameter($arg1);
+        $id = 'ifm-' . rand(1000, 9999);
+        //Js for setting id to iframe
+        $function = <<<JS
+            (function(){
+              var elem = document.getElementById("$arg1");
+              var iframes = elem.getElementsByTagName('iframe');
+              var f = iframes[0];
+              f.id = "$id";
+            })()
+JS;
+        try {
+            $this->getSession()->executeScript($function);
+        }
+        catch(Exception $e) {
+            throw new \Exception(sprintf('No iframe found in the element "%s" on the page "%s".', $arg1, $this->getSession()->getCurrentUrl()));
+        }
+        
         $this->getSession()->wait(5000);
-        $this->getSession()->switchToIFrame($arg1);
+        $this->getSession()->switchToIFrame($id);
     }
 
     /**
@@ -317,7 +334,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
             $this->originalWindowName = $originalWindowName;
         }
 
-       // $this->getSession()->getPage()->pressButton($button); //Pressing the withdraw button
+        // $this->getSession()->getPage()->pressButton($button); //Pressing the withdraw button
 
         $popupName = $this->getNewPopup($originalWindowName);
 
@@ -348,7 +365,6 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
                 $last = array_pop($names);
             }
         }
-
         return $last;
     }
 
