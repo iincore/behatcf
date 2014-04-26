@@ -77,7 +77,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
         $arg2 = $this->replaceParameter($arg2);
         $javascript = <<<JS
             (function(){
-             document.body.innerHTML = $arg2;
+             document.body.innerHTML = '$arg2';
             })()
 JS;
         $this->getSession()->executeScript($javascript);
@@ -331,7 +331,7 @@ JS;
     }
 
     /**
-     * @Given /^I switch back from iframe$/
+     * @Then /^I switch back from iframe$/
      */
     public function iSwitchBackFromIFrame()
     {
