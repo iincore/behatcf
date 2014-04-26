@@ -6,6 +6,7 @@ Feature: Admin tool
   @javascript
   Scenario: View users list
     Given I am logged in as "{username}" and "{password}"
+    Given I check role of "{username}" with "ROLE_SUPER_ADMIN"
     And I am on "/admin/advancedsearch/"
     Then I set value in "keywords" with "3"
     And I click on field "img#search-icon"
