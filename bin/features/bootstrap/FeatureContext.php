@@ -16,6 +16,7 @@ use Behat\Behat\Context\Step;
 class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext implements TranslatedContextInterface
 {
     private $params = array();
+    private $keyCodes = array('up' => 38, 'down' => 40, 'enter' => 13);
     var $originalWindowName = '';
     /**
      * Initializes context.
@@ -48,20 +49,23 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     }
 
     /**
-     * @Then /^I manually press enter key on "([^"]*)"$/
+     * @Then /^I manually press "([^"]*)" key$/
      */
-    public function iManuallyPressKeyOn($ele)
+    public function iManuallyPressKeyOn($key)
     {
-        $ele = $this->replaceParameter($ele);
-        $session = $this->getSession();
-        $element = $session->getPage()->find(
-            'xpath',
-            $session->getSelectorsHandler()->selectorToXpath('css', $ele) // just changed xpath to css
-        );
-        if (null === $element) {
-            throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $ele));
+        $key = $this->replaceParameter($key);
+        if(isset($this->keyCodes[$key])){
+            $key = $this->keyCodes[$key];
         }
-        $element->keyPress('\r');
+        //$session->expectDialog(Session::ALERT_DIALOG)->withText('dialog text here')->thenPressOK();
+        $script = <<<JS
+            (function(){
+                var e = jQuery.Event('keypress');
+                e.which = $key; // #13 = Enter key
+                $(':focus').trigger(e);
+            })()
+JS;
+        $this->getSession()->executeScript("");
     }
 
     /**
