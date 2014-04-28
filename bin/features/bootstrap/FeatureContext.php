@@ -61,7 +61,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
         if (null === $element) {
             throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $ele));
         }
-        $element->keyPress(13);
+        $element->keyPress('\r');
     }
 
     /**
