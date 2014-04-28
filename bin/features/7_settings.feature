@@ -51,7 +51,9 @@ Feature: update settings of the user
     When I click on the element with xpath "//div[2]/div/div[2]/div/div/table/tbody/tr[4]/td[3]/a"
     Then I look for the output wait "20" seconds
     Then I fill in "cf_studentbundle_locationstype_current_location" with "Santa Clara, CA, United States"
-    And I fill in "add-location" with "Mountain View, CA, United States"
+    Then I manually press enter key on "#cf_studentbundle_locationstype_current_location"
+    And I fill in "add-location" with "Mountain View, CA, United States "
+    Then I manually press enter key on "#add-location"
     And I look for the output wait "30" seconds
     Then I press "Save"
     And I look for the output wait "60" seconds

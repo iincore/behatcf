@@ -48,11 +48,29 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     }
 
     /**
-     * @Then /^I manually press enter key$/
+     * @Then /^I manually press enter key on "([^"]*)"$/
      */
-    public function iManuallyPressKey()
+    public function iManuallyPressKeyOn($ele)
     {
-        $this->getSession()->executeScript("$(':focus').trigger($.Event('keypress', {which: 9, keyCode: 9}));");
+        $ele = $this->replaceParameter($ele);
+        $session = $this->getSession();
+        $element = $session->getPage()->find(
+            'xpath',
+            $session->getSelectorsHandler()->selectorToXpath('css', $ele) // just changed xpath to css
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $ele));
+        }
+        $element->keyPress(13);
+    }
+
+    /**
+     * @Then /^I check popup window text "([^"]*)"$/
+     */
+    public function iCheckPopupWindowText($text)
+    {
+        //$session->expectDialog(Session::ALERT_DIALOG)->withText('dialog text here')->thenPressOK();
+        //$this->getSession()->get
     }
 
     /**
