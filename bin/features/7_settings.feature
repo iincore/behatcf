@@ -24,6 +24,7 @@ Feature: update settings of the user
     And I look for the output wait "30" seconds
     Then I press "Save"
     And I look for the output wait "30" seconds
+    Then I should see "Your settings have been saved."
    #
    #Edit User Name
    #
@@ -32,16 +33,18 @@ Feature: update settings of the user
     Then I fill in "cf_user_change_username_username" with "lakshana"
     And I look for the output wait "30" seconds
     Then I press "Save"
-    And I look for the output wait "30" seconds
+    And I look for the output wait "60" seconds
+    Then I should see "Your settings have been saved."
    #
    #Edit Password
    #
     When I click on the element with xpath "//div[2]/div/div[2]/div/div/table/tbody/tr[3]/td[3]/a"
     Then I look for the output wait "20" seconds
-    Then I fill in "fos_user_change_password_form_new_first" with "collegefeed"
-    And I fill in "fos_user_change_password_form_new_second" with "collegefeed"
+    Then I fill in "fos_user_change_password_form_new_first" with "iincore"
+    And I fill in "fos_user_change_password_form_new_second" with "iincore"
     Then I press "Save"
     And I look for the output wait "30" seconds
+    Then I should see "Your settings have been saved."
   #
   #Edit Current and Desired location
   #
@@ -52,6 +55,7 @@ Feature: update settings of the user
     And I look for the output wait "30" seconds
     Then I press "Save"
     And I look for the output wait "60" seconds
+    Then I should see "Your settings have been saved."
   #
   #Edit Availablity
   #
@@ -59,7 +63,7 @@ Feature: update settings of the user
     Then I look for the output wait "20" seconds
     When I check "cf_studentbundle_availabilitytype_availability_0"
     Then I press "Save"
-    And I look for the output wait "30" seconds
+    And I look for the output wait "60" seconds
     Then I should see "Actively Looking"
   #
   # Now user is at "Profile settings"
@@ -78,4 +82,4 @@ Feature: update settings of the user
     And I fill in "cf_studentbundle_infotype_interest3" with "Oracle"
     Then I press "Save"
     And I look for the output wait "30" seconds
-
+    Then I should see "Your settings have been saved."

@@ -16,7 +16,7 @@ Scenario: Sign up to collegefeed
 #Enter student school details
 #
 
-   When I fill in "cf_studentbundle_usernamegraduationtype_schoolRecord_university" with "{signup_school}"
+   When I fill in "cf_studentbundle_usernamegraduationtype_schoolRecord_university" with "Stanford University (CA)"
    And I look for the output wait "30" seconds
    And I fill in "cf_studentbundle_usernamegraduationtype_schoolRecord_major" with "computers"
    And I fill in "cf_studentbundle_usernamegraduationtype_schoolRecord_graduation_year" with "2012"
@@ -38,12 +38,14 @@ Scenario: Sign up to collegefeed
 #Enter Availability preferences of a student
 #
    When I check "cf_studentbundle_locationstype_availability_0"
-   And I fill in "cf_studentbundle_locationstype_current_location" with "San Jose, CA, United States"
-   And I look for the output wait "30" seconds
-   Then I should see "San Jose, CA"
-   And I fill in "add-location" with "{signup_location}"
-   And I look for the output wait "30" seconds
-   Then I should see "Santa Clara, CA"
+   Then I fill in "cf_studentbundle_locationstype_current_location" with "Santa Clara, CA, United States"
+   Then I manually press enter key
+  # And I look for the output wait "30" seconds
+   #Then I should see "San Jose, CA"
+   And I fill in "add-location" with "Mountain View, CA, United States"
+   Then I manually press enter key
+   And I look for the output wait "60" seconds
+   #Then I should see "Santa Clara, CA"
    Then I press "Next"
    And I look for the output wait "30" seconds
    Then I should see "collegefeed is an exclusive network and requires members to invite 5 friends in order to extend the benefits."

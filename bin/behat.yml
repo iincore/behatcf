@@ -6,7 +6,8 @@ default:
   context:
     class:                            'FeatureContext'
     parameters :
-          signup_email: testuser1@iincore.com
+          signup_email: testuser123@iincore.com
+          signup_password: iincore
           username: lakshana
           password : collegefeed
           db: cf_feeds
@@ -15,6 +16,7 @@ default:
           db_password: collegefeed
           admin_from_date: 04/23/2014
           admin_to_date: 04/23/2014
+          admin_autodispose_date: 04/25/2014
   paths:
     bootstrap:                        'features/bootstrap'
   extensions:
