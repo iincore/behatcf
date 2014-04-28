@@ -48,6 +48,14 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     }
 
     /**
+     * @Then /^I manually press enter key$/
+     */
+    public function iManuallyPressKey()
+    {
+        $this->getSession()->executeScript("$(':focus').trigger($.Event('keypress', {which: 9, keyCode: 9}));");
+    }
+
+    /**
      * @Given /^I look for the output wait "([^"]*)" seconds$/
      */
     public function iLookForTheOutputToAppear($time = 60)
