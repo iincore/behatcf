@@ -679,6 +679,7 @@ JS;
      */
     public function assertPageContainsText($text)
     {
+        $text = $this->replaceParameter($text);
         $this->assertSession()->pageTextContains($this->fixStepArgument($text));
     }
 
@@ -689,6 +690,7 @@ JS;
      */
     public function assertPageNotContainsText($text)
     {
+        $text = $this->replaceParameter($text);
         $this->assertSession()->pageTextNotContains($this->fixStepArgument($text));
     }
 
