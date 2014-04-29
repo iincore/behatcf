@@ -16,13 +16,13 @@ Search with user id and update
 
   @javascript
   Scenario:Now the user is at Admin page for a profile to update
-    Given I am logged in as "lakshana" and "collegefeed"
+    Given I am logged in as "{username}" and "{password}"
     When I should see "Dashboard"
     And I am on "/admin/advancedsearch/"
-    When I fill in "keywords" with "3"
+    When I fill in "keywords" with "{admin_id}"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
-    And I should see "Lakshana Pant"
+    And I should see "{admin_name}"
   #
   #verifying the the user profile i.e "View Profile"
   #
@@ -30,7 +30,7 @@ Search with user id and update
     Then I look for the output wait "30" seconds
     Given I switch to popup
     Then I look for the output wait "30" seconds
-    When I should see "Lakshana"
+    When I should see "{admin_name}"
     Then I switch back to original window
   #
   #change the connect status of a user
@@ -38,7 +38,7 @@ Search with user id and update
     When I click on the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[2]/div/button[2]"
     Then I follow "Accepted"
     Then I look for the output wait "30" seconds
-    And I should see "Send message to Lakshana"
+    And I should see "Send message"
     # Then close the popup window with css#
     Given I click on field "div#contactModal.modal button.close"
     Then I look for the output wait "30" seconds
@@ -49,7 +49,7 @@ Search with user id and update
     When I follow "Send Message"
     Then I follow "send-connect-message-2"
     Then I look for the output wait "60" seconds
-    And I should see "Send message to Lakshana"
+    And I should see "Send message"
     Then I press "submit-message"
     Then I look for the output wait "30" seconds
     And I should see "Message Sent!"
@@ -83,7 +83,7 @@ Search with user id and update
     When I click on the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[4]/form/div/p/div/div/ul/li[3]"
     And I press "save_ajax_id1"
     Then I look for the output wait "60" seconds
-    When I check text "Software Engineering" in the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[3]/div/p/span"
+    When I check text "Software Engineering" in the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[3]/div"
     Then I look for the output wait "30" seconds
   #
   #Edit Bulltets i.e Notes for a profile
@@ -104,14 +104,14 @@ Search with user id and update
   #Verifying the connect status and email sent under right pane in Admintool
   #
     Given I am on "/admin/advancedsearch/"
-    When I fill in "keywords" with "3"
+    When I fill in "keywords" with "{admin_id}"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
-    And I should see "Lakshana Pant"
+    And I should see "{admin_name}"
     When I check text "Accepted" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/span"
     And I follow "Emailed"
     Then I look for the output wait "60" seconds
-    Then I should see "Sanjeev Agrawal"
+    Then I should see " Type : Accepted"
 
 
 

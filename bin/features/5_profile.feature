@@ -18,8 +18,8 @@ Feature: public profile update
   #
     When I click on field "#edit-name-btn"
     Then I look for the output wait "30" seconds
-    Then I fill in "cf_info_name_type_firstName" with "Lakshana"
-    And I fill in "cf_info_name_type_lastName" with "Pant"
+    Then I fill in "cf_info_name_type_firstName" with "{first_name}"
+    And I fill in "cf_info_name_type_lastName" with "{last_name}"
     When I click on field "#edit-name-inline > button.btn-save"
     And I look for the output wait "60" seconds
   #
