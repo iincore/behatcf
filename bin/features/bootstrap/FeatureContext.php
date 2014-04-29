@@ -72,21 +72,33 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
         $function = <<<JS
             (function(){
              target = '#users';
+             var a = '$field';
                 $(target).find('tr').each(function() {
-                    switch($field){
-                        case "Profile Percentage More":
-                           var pp =  $(this).find('td:nth-child(1) > span').html().trim();
-                           if(pp < $value){
-                                $result = false;
+                    switch(a){
+                        case "Percentage More":
+                           var pp =  $(this).find('td > span').html().trim();
+                           var pv = parseInt('$value');
+                           pp = pp.replace("%", "");
+                           if(pp < pv){
+                                 throw 'failed';
+                           }
+                        break;
+                        case "Percentage Less":
+                           var pp =  $(this).find('td > span').html().trim();
+                           var pv = parseInt('$value');
+                           pp = pp.replace("%", "");
+                           if(pp > pv){
+                                 throw 'failed';
                            }
                         break;
                     }
                 });
             })()
 JS;
-        $this->getSession()->executeScript($function);
-        if($result == false) {
-            throw new \Exception(sprintf('%s failed due assertion not validated for value %s', $field, $value));
+        try{
+            $this->getSession()->executeScript($function);
+        } catch (Exception $ex){
+            throw new \Exception(sprintf('%s failed due to assertion not validated for value %s', $field, $value));
         }
     }
 
