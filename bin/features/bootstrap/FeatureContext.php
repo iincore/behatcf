@@ -49,23 +49,24 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
     }
 
     /**
-     * @Then /^I manually press "([^"]*)" key$/
+     * @Then /^I manually press "([^"]*)" key on xpath "([^"]*)"$/
      */
-    public function iManuallyPressKeyOn($key)
+    public function iManuallyPressKeyOn($key, $xpath)
     {
         $key = $this->replaceParameter($key);
         if(isset($this->keyCodes[$key])){
             $key = $this->keyCodes[$key];
         }
-        //$session->expectDialog(Session::ALERT_DIALOG)->withText('dialog text here')->thenPressOK();
-        $script = <<<JS
-            (function(){
-                var e = jQuery.Event('keypress');
-                e.which = $key; // #13 = Enter key
-                $(':focus').trigger(e);
-            })()
-JS;
-        $this->getSession()->executeScript("");
+        $this->getSession()->getDriver()->keyPress($this->getSession()->getSelectorsHandler()->selectorToXpath('xpath', $xpath), $key);
+//        //$session->expectDialog(Session::ALERT_DIALOG)->withText('dialog text here')->thenPressOK();
+//        $script = <<<JS
+//            (function(){
+//                var e = jQuery.Event('keypress');
+//                e.which = $key; // #13 = Enter key
+//                $(':focus').trigger(e);
+//            })()
+//JS;
+//        $this->getSession()->executeScript("");
     }
 
     /**
@@ -74,7 +75,7 @@ JS;
     public function iCheckPopupWindowText($text)
     {
         //$session->expectDialog(Session::ALERT_DIALOG)->withText('dialog text here')->thenPressOK();
-        //$this->getSession()->get
+        $this->getSession()->getDriver()->DriverSession()->accept_alert();
     }
 
     /**
@@ -205,7 +206,8 @@ JS;
         if (null === $element) {
             throw new \InvalidArgumentException(sprintf('Could not evaluate XPath: "%s"', $xpath));
         }
-        if(trim($text) != trim($element->getText())){
+
+        if(substr_count($element->getText(), trim($text)) == 0){
             throw new Exception($text . ' not find in element');
         }
     }
