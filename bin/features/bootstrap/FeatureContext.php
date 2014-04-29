@@ -196,6 +196,7 @@ JS;
      */
     public function iCheckTextInTheElementWithXPath($text, $xpath)
     {
+        $text = $this->replaceParameter($text);
         $session = $this->getSession(); // get the mink session
         $element = $session->getPage()->find(
             'xpath',
