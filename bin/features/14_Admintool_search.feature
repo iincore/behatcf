@@ -18,31 +18,31 @@ h.Search with Created/Updated
     Given I am logged in as "lakshana" and "collegefeed"
     When I should see "Dashboard"
     And I am on "/admin/advancedsearch/"
-    When I fill in "fromDate" with "04/26/2013"
-    And I fill in "toDate" with "04/27/2014"
-    And I fill in "name" with "mike"
+    When I fill in "fromDate" with "{admin_from_date}"
+    And I fill in "toDate" with "{admin_to_date}"
+    And I fill in "name" with "{admin_name}"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
-    And I should see "Mike"
+    And I should see "{admin_name}"
   #
   #search and verify Profile percentage MORE Then
   #
     Given I am on "/admin/advancedsearch/"
     Then I look for the output wait "30" seconds
-    When I fill in "fromDate" with "04/26/2013"
-    And I fill in "toDate" with "04/27/2014"
+    When I fill in "fromDate" with "{admin_from_date}"
+    And I fill in "toDate" with "{admin_to_date}"
     And I fill in "pcp" with "26"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
-    Then I assert admin search field "Profile Percentage More" value "80"
+    #Then I assert admin search field "Profile Percentage More" value "80"
 
   #
   #Search with categories
   #
     Given I am on "/admin/advancedsearch/"
     Then I look for the output wait "30" seconds
-    When I fill in "fromDate" with "04/26/2013"
-    And I fill in "toDate" with "04/27/2014"
+    When I fill in "fromDate" with "{admin_from_date}"
+    And I fill in "toDate" with "{admin_to_date}"
     # Select software engineering bucket with value (value of SE is"646")
     When I select "646" from "bucket"
     And I click on field "img#search-icon"
@@ -53,8 +53,8 @@ h.Search with Created/Updated
 
     Given I am on "/admin/advancedsearch/"
     Then I look for the output wait "30" seconds
-    When I fill in "fromDate" with "04/26/2013"
-    And I fill in "toDate" with "04/27/2014"
+    When I fill in "fromDate" with "{admin_from_date}"
+    And I fill in "toDate" with "{admin_to_date}"
     #Value of Highbar is 1
     When I select "1" from "bar"
     And I click on field "img#search-icon"
@@ -64,8 +64,8 @@ h.Search with Created/Updated
   #
     Given I am on "/admin/advancedsearch/"
     Then I look for the output wait "30" seconds
-    When I fill in "fromDate" with "04/26/2013"
-    And I fill in "toDate" with "04/27/2014"
+    When I fill in "fromDate" with "{admin_from_date}"
+    And I fill in "toDate" with "{admin_to_date}"
     #value of Fulltime is 4
     When I select "4" from "intern"
     And I click on field "img#search-icon"
@@ -75,8 +75,8 @@ h.Search with Created/Updated
   #
     Given I am on "/admin/advancedsearch/"
     Then I look for the output wait "30" seconds
-    When I fill in "fromDate" with "04/26/2013"
-    And I fill in "toDate" with "04/27/2014"
+    When I fill in "fromDate" with "{admin_from_date}"
+    And I fill in "toDate" with "{admin_to_date}"
   #value connect status "Accecpted" is "2"
     When I select "2" from "connect"
     And I click on field "img#search-icon"
@@ -86,8 +86,8 @@ h.Search with Created/Updated
   #
     Given I am on "/admin/advancedsearch/"
     Then I look for the output wait "30" seconds
-    When I fill in "fromDate" with "04/26/2013"
-    And I fill in "toDate" with "04/27/2014"
+    When I fill in "fromDate" with "{admin_from_date}"
+    And I fill in "toDate" with "{admin_to_date}"
     When I select "Updated" from "status"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds

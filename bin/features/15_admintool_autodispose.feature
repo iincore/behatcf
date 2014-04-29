@@ -31,7 +31,7 @@ Feature: collegefeed Admin tool on Auto dispose
     And I am on "/admin/advancedsearch/"
     When I follow "toggle-auto-dispose"
     Then I should see "Profiles on date"
-    When I fill in "last-hours" with "04/25/2014"
+    When I fill in "last-hours" with "{admin_autodispose_date}"
     And I fill in "profile-percentage-auto-dispose" with "50"
     And I fill in "profile-top-percentage" with "-1"
     And I follow "auto-dispose-submit"
