@@ -58,15 +58,35 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
             $key = $this->keyCodes[$key];
         }
         $this->getSession()->getDriver()->keyPress($this->getSession()->getSelectorsHandler()->selectorToXpath('xpath', $xpath), $key);
-//        //$session->expectDialog(Session::ALERT_DIALOG)->withText('dialog text here')->thenPressOK();
-//        $script = <<<JS
-//            (function(){
-//                var e = jQuery.Event('keypress');
-//                e.which = $key; // #13 = Enter key
-//                $(':focus').trigger(e);
-//            })()
-//JS;
-//        $this->getSession()->executeScript("");
+    }
+
+    /**
+     * @Then /^I assert admin search field "([^"]*)" value "([^"]*)"$/
+     */
+    public function iCompareAdminSearchResults($field, $value)
+    {
+        $field = $this->replaceParameter($field);
+        $value = $this->replaceParameter($value);
+        $result = true;
+        //Js for setting id to iframe
+        $function = <<<JS
+            (function(){
+             target = '#users';
+                $(target).find('tr').each(function() {
+                    switch($field){
+                        case "Profile Percentage More":
+                           var pp =  $(this).find('td:nth-child(1) > span').html().trim();
+                           if(pp < $value){
+                                $result = false;
+                           }
+                        break;
+                    }
+                });
+            })()
+JS;
+        if($result == false) {
+            throw new \Exception(sprintf('%s failed due assertion not validated for value %s', $field, $value));
+        }
     }
 
     /**
