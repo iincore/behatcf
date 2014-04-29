@@ -34,6 +34,7 @@ h.Search with Created/Updated
     And I fill in "pcp" with "26"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
+    Then I assert admin search field "Profile Percentage More" value "80"
 
   #
   #Search with categories
