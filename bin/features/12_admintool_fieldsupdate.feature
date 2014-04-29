@@ -70,6 +70,7 @@ Search with user id and update
     Then I look for the output wait "30" seconds
     When I follow "High Bar"
     And I look for the output wait "30" seconds
+    When I check text "High Bar" in the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[2]/div[5]/button"
   #
   #Edit Categories
   #
@@ -81,8 +82,9 @@ Search with user id and update
   #Here the user selects the buckets name using xpath #
     When I click on the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[4]/form/div/p/div/div/ul/li[3]"
     And I press "save_ajax_id1"
+    Then I look for the output wait "60" seconds
+    When I check text "Software Engineering" in the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[3]/div/p/span"
     Then I look for the output wait "30" seconds
-    Then I should see "Software Engineering"
   #
   #Edit Bulltets i.e Notes for a profile
   #
@@ -95,7 +97,9 @@ Search with user id and update
     # then click on the save button to save notes#
     When I click on the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[5]/form/div[2]/input"
     Then I look for the output wait "60" seconds
-    Then I should see "testing"
+    When I check text "testing" in the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[4]/div/div"
+    Then I look for the output wait "30" seconds
+
   #
   #Verifying the connect status and email sent under right pane in Admintool
   #

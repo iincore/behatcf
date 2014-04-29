@@ -39,11 +39,13 @@ Scenario: Sign up to collegefeed
 #
    When I check "cf_studentbundle_locationstype_availability_0"
    Then I fill in "cf_studentbundle_locationstype_current_location" with "Santa Clara, CA, United States"
-   Then I manually press enter key
+#   Then I manually press enter key on "#cf_studentbundle_locationstype_current_location"
   # And I look for the output wait "30" seconds
-   #Then I should see "San Jose, CA"
+   #Then I should see "San Jose, CA" #student-selectlocation > div:nth-child(22) > div:nth-child(1)
+   When I click on field "#student-selectlocation > div:nth-child(22) > div:nth-child(1)"
    And I fill in "add-location" with "Mountain View, CA, United States"
-   Then I manually press enter key
+   #Then I manually press enter key on "#add-location"
+   When I click on field "#student-selectlocation > div:nth-child(22) > div:nth-child(1)"
    And I look for the output wait "60" seconds
    #Then I should see "Santa Clara, CA"
    Then I press "Next"
