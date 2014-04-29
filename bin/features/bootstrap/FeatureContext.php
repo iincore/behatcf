@@ -84,6 +84,7 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
                 });
             })()
 JS;
+        $this->getSession()->executeScript($function);
         if($result == false) {
             throw new \Exception(sprintf('%s failed due assertion not validated for value %s', $field, $value));
         }
