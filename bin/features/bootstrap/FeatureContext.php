@@ -455,6 +455,7 @@ JS;
     public function iMaximizeTheWindow()
     {
         $this->getSession()->getDriver()->resizeWindow(1366, 768);
+//        $this->getSession()->getDriver()->maximizeWindow();
     }
 
     public function replaceParameter($param){
