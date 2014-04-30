@@ -29,7 +29,8 @@ Feature: collegefeed Admin tool on Auto dispose
     Given I am logged in as "lakshana" and "collegefeed"
     When I should see "Dashboard"
     And I am on "/admin/advancedsearch/"
-    When I follow "toggle-auto-dispose"
+    When I click on field "#toggle-auto-dispose"
+    Then I look for the output wait "60" seconds
     Then I should see "Profiles on date"
     When I fill in "last-hours" with "{admin_autodispose_date}"
     And I fill in "profile-percentage-auto-dispose" with "50"
@@ -39,22 +40,30 @@ Feature: collegefeed Admin tool on Auto dispose
     And I should see "Ave Maria University (FL)"
     When I check text "Profile to be reviewed" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/span"
     When I check text "Bangalore, Karnataka, India" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/div/div/span[3]"
+    Then I assert admin search field "Percentage Less" value "50"
     And I follow "send-message-4"
-    Then I should see " Waitlist  - International"
-  #
-  #Auto dispose to check profile percentage less then with TOPcolleges
-  #
-    And I am on "/admin/advancedsearch/"
-    When I follow "toggle-auto-dispose"
-    Then I should see "Profiles on date"
-    When I fill in "last-hours" with "{admin_autodispose_date}"
-    And I fill in "profile-percentage-auto-dispose" with "-1"
-    And I fill in "profile-top-percentage" with "33"
-    And I follow "auto-dispose-submit"
+    Given I switch to popup
     Then I look for the output wait "60" seconds
-    And I should see "Stanford University (CA)"
-    When I check text "Profile to be reviewed" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/span"
-    When I check text "Bangalore, Karnataka, India" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/div/div/span[3]"
-    And I follow "send-message-4"
-    Then I should see "Waitlist - NMI"
+    Then I should see "Mails are sent successfully."
+    Then I switch back to original window
+    #Then I should see " Waitlist  - International"
+  #
+  #Auto dispose to check profile percentage less then with TOP colleges
+  #
+#    And I am on "/admin/advancedsearch/"
+#    When I click on field "#toggle-auto-dispose"
+#    Then I look for the output wait "60" seconds
+#    Then I should see "Profiles on date"
+#    When I fill in "last-hours" with "{admin_autodispose_date}"
+#    And I fill in "profile-percentage-auto-dispose" with "-1"
+#    And I fill in "profile-top-percentage" with "33"
+#    And I follow "auto-dispose-submit"
+#    Then I look for the output wait "60" seconds
+#    And I should see "Stanford University (CA)"
+#    When I check text "Profile to be reviewed" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/span"
+#    When I check text "Santa Clara, CA, United States" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/div/div/span[3]"
+#    Then I assert admin search field "Percentage Less" value "33"
+#    And I follow "send-message-4"
+#    Then I look for the output wait "60" seconds
+   # Then I should see "Waitlist - NMI"
 

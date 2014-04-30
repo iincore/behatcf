@@ -15,6 +15,7 @@ h.Search with Created/Updated
 
   @javascript
   Scenario:Now the user is at Admin page to search for records
+    search with name
     Given I am logged in as "lakshana" and "collegefeed"
     When I should see "Dashboard"
     And I am on "/admin/advancedsearch/"
@@ -34,7 +35,7 @@ h.Search with Created/Updated
     And I fill in "pcp" with "26"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
-    #Then I assert admin search field "Profile Percentage More" value "80"
+    Then I assert admin search field "Percentage More" value "26"
 
   #
   #Search with categories
@@ -47,6 +48,7 @@ h.Search with Created/Updated
     When I select "646" from "bucket"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
+    When I check text "Software Engineering" in the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[3]/div"
   #
   #Search with bar
   #
@@ -59,6 +61,7 @@ h.Search with Created/Updated
     When I select "1" from "bar"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
+    When I check text "High Bar" in the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[2]/div[5]/button"
   #
   #Search with Intern/Fulltime
   #
@@ -70,6 +73,7 @@ h.Search with Created/Updated
     When I select "4" from "intern"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
+    When I check text "Full Time" in the element with xpath "//*[@id='studentInfo']/div/div[2]/div[2]/div[4]/button[1]"
   #
   #Search with Connect status
   #
@@ -81,6 +85,7 @@ h.Search with Created/Updated
     When I select "2" from "connect"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
+    When I check text "Accepted" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/span"
   #
   #Search with Created/Updated
   #
@@ -91,3 +96,4 @@ h.Search with Created/Updated
     When I select "Updated" from "status"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
+    When I check text "Updated" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/div/a"
