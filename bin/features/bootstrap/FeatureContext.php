@@ -598,6 +598,9 @@ JS;
      */
     public function selectOption($select, $option)
     {
+        $select = $this->replaceParameter($select);
+        $option = $this->replaceParameter($option);
+
         $select = $this->fixStepArgument($select);
         $option = $this->fixStepArgument($option);
         $this->getSession()->getPage()->selectFieldOption($select, $option);
@@ -610,6 +613,9 @@ JS;
      */
     public function additionallySelectOption($select, $option)
     {
+        $select = $this->replaceParameter($select);
+        $option = $this->replaceParameter($option);
+
         $select = $this->fixStepArgument($select);
         $option = $this->fixStepArgument($option);
         $this->getSession()->getPage()->selectFieldOption($select, $option, true);
@@ -622,6 +628,8 @@ JS;
      */
     public function checkOption($option)
     {
+        $option = $this->replaceParameter($option);
+
         $option = $this->fixStepArgument($option);
         $this->getSession()->getPage()->checkField($option);
     }
