@@ -25,7 +25,7 @@ All searching Criterias
     When I click on field "#toggle-advanced"
     And I check "international"
     When I fill in "keywords" with "java"
-    When I follow "Search"
+    When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
 #
 #Search with All Categories
@@ -44,7 +44,7 @@ All searching Criterias
     When I click on field "#toggle-advanced"
     And I check "international"
     When I fill in "school" with "Stanford University (CA)"
-    And I follow "Search"
+    When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
 #
 #Search with Major
@@ -54,7 +54,7 @@ All searching Criterias
     When I click on field "#toggle-advanced"
     And I check "international"
     When I fill in "major" with "Computer Science"
-    And I follow "Search"
+    When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
 #
 #Search with Degree
@@ -64,7 +64,7 @@ All searching Criterias
     When I click on field "#toggle-advanced"
     And I check "international"
     When I fill in "degree" with "BS"
-    And I follow "Search"
+    When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
 #
 #Search for Graduated
@@ -74,7 +74,7 @@ All searching Criterias
     When I click on field "#toggle-advanced"
     And I check "international"
     And I check "availability_now"
-    And I follow "Search"
+    When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
 #
 #Search for Graduating_Next
@@ -82,7 +82,7 @@ All searching Criterias
     When I click on field "#toggle-advanced"
     And I check "international"
     And I check "availability_next"
-    And I follow "Search"
+    When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
 #
 #Search for Graduating_Later
@@ -90,7 +90,7 @@ All searching Criterias
     When I click on field "#toggle-advanced"
     And I check "international"
     And I check "availability_not"
-    And I follow "Search"
+    When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
 #
 #Search with name
@@ -100,7 +100,7 @@ All searching Criterias
     When I click on field "#toggle-advanced"
     And I check "international"
     When I fill in "name" with "kishore"
-    And I follow "Search"
+    When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
 
 

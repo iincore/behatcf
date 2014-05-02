@@ -15,7 +15,9 @@ h.Search with Created/Updated
 
   @javascript
   Scenario:Now the user is at Admin page to search for records
-    search with name
+  #
+  #search With Name
+  #
     Given I am logged in as "lakshana" and "collegefeed"
     When I should see "Dashboard"
     And I am on "/admin/advancedsearch/"

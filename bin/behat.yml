@@ -8,19 +8,25 @@ default:
     parameters :
           signup_email: testuser129@iincore.com
           signup_password: iincore
+
           first_name: Lakshana
           last_name: Pant
           username: lakshana
           password : collegefeed
+
           db: cf_feeds
           host: cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com
           db_username: collegefeed
           db_password: collegefeed
+
           admin_from_date: 01/23/2013
           admin_to_date: 04/29/2014
           admin_id: 20886
           admin_name: kishore test
           admin_autodispose_date: 04/25/2014
+
+          emp_name: kishore
+          emp_bucketname: testqa1
   paths:
     bootstrap:                        'features/bootstrap'
   extensions:
@@ -33,10 +39,10 @@ default:
 #    BehatPopupExtension\Extension:    ~
 #          guzzle_parameters:
 #            ssl.certificate_authority: false
-      formatter:
-          name:                             pretty,junit,html
-          parameters:
-            output_path:                    null,junit,behat_report.html
+  formatter:
+      name:                             pretty,junit,html
+      parameters:
+        output_path:                    null,junit,behat_report.html
 
 prod:
   context:
