@@ -12,7 +12,9 @@ Feature: upload resume
   Scenario:Now the user is at dashboard to upload resume
     Given I am logged in as "{username}" and "{password}"
     And I should see "Dashboard"
-    When I follow "upload-resume"
+    When I follow "Profile"
+    Then I should see "public profile"
+    When I follow "Resume"
     And I look for the output wait "200" seconds
     Then I should see "Please upload your latest resume"
     When I attach the file "C:\Users\Dell Laptop\Downloads\HadiKasab.pdf" to "resume"
