@@ -69,6 +69,64 @@ In order to check with all the links in the home page
     Then I switch back to original window
     Then I should see "Get Jobs Faster Through Insider Connections"
     Then I look for the output wait "30" seconds
+  #Link to Newyork Times Article
+    When I click on field "#news-row > span > a:nth-child(6) img"
+    Then I look for the output wait "30" seconds
+    Given I switch to popup
+    Then I look for the output wait "30" seconds
+    When I should see "Matchmaker, Matchmaker, Find Me a Job"
+    Then I switch back to original window
+    Then I should see "Get Jobs Faster Through Insider Connections"
+    Then I look for the output wait "30" seconds
+#
+#Links to social networking pages
+#
+  #Link to Facebook
+    When I follow "Follow on Facebook"
+    Then I look for the output wait "30" seconds
+    Given I switch to popup
+    Then I look for the output wait "30" seconds
+    When I should see "Collegefeed is a social platform that makes it very easy and engaging for college grads"
+    Then I switch back to original window
+    Then I should see "Get Jobs Faster Through Insider Connections"
+    Then I look for the output wait "30" seconds
+  #Link to Twitter
+    When I follow "Twitter"
+    Then I look for the output wait "30" seconds
+    Given I switch to popup
+    Then I look for the output wait "30" seconds
+    When I should see "Collegefeed is a social platform that makes it very easy"
+    Then I switch back to original window
+    Then I should see "Get Jobs Faster Through Insider Connections"
+    Then I look for the output wait "30" seconds
+  #Link to LinkedIn
+    When I follow "LinkedIn"
+    Then I look for the output wait "30" seconds
+    Given I switch to popup
+    Then I look for the output wait "30" seconds
+    When I should see "Join LinkedIn and see how you are connected to Collegefeed. It's free."
+    Then I switch back to original window
+    Then I should see "Get Jobs Faster Through Insider Connections"
+    Then I look for the output wait "30" seconds
+  #Link to Goolge
+    When I follow "Google"
+    Then I look for the output wait "30" seconds
+    Given I switch to popup
+    Then I look for the output wait "30" seconds
+    When I should see "Share the right things with just the right people."
+    Then I switch back to original window
+    Then I should see "Get Jobs Faster Through Insider Connections"
+    Then I look for the output wait "30" seconds
+  #Link to Pinterest
+    When I follow "Pinterest"
+    Then I look for the output wait "30" seconds
+    Given I switch to popup
+    Then I look for the output wait "30" seconds
+    When I should see "collegefeed is an early career marketplace that helps college students"
+    Then I switch back to original window
+    Then I should see "Get Jobs Faster Through Insider Connections"
+    Then I look for the output wait "30" seconds
+
 
 #
 #Footer Menu on Homepage "Collegefeed menu"
