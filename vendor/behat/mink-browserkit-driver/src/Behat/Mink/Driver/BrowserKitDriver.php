@@ -12,6 +12,7 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\Mink\Session;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
@@ -37,10 +38,14 @@ class BrowserKitDriver extends CoreDriver
 {
     private $session;
     private $client;
+
+    /**
+     * @var Form[]
+     */
     private $forms = array();
     private $serverParameters = array();
     private $started = false;
-    private $removeScriptFromUrl = true;
+    private $removeScriptFromUrl = false;
     private $removeHostFromUrl = false;
 
     /**
@@ -49,7 +54,7 @@ class BrowserKitDriver extends CoreDriver
      * @param Client      $client  BrowserKit client instance
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client = null, $baseUrl = null)
+    public function __construct(Client $client, $baseUrl = null)
     {
         $this->client = $client;
         $this->client->followRedirects(true);
@@ -81,9 +86,15 @@ class BrowserKitDriver extends CoreDriver
      * Tells driver to remove hostname from URL.
      *
      * @param Boolean $remove
+     *
+     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
      */
     public function setRemoveHostFromUrl($remove = true)
     {
+        trigger_error(
+            'setRemoveHostFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
+            E_USER_DEPRECATED
+        );
         $this->removeHostFromUrl = (bool) $remove;
     }
 
@@ -91,9 +102,15 @@ class BrowserKitDriver extends CoreDriver
      * Tells driver to remove script name from URL.
      *
      * @param Boolean $remove
+     *
+     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
      */
     public function setRemoveScriptFromUrl($remove = true)
     {
+        trigger_error(
+            'setRemoveScriptFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
+            E_USER_DEPRECATED
+        );
         $this->removeScriptFromUrl = (bool) $remove;
     }
 
@@ -118,10 +135,8 @@ class BrowserKitDriver extends CoreDriver
      */
     public function stop()
     {
-        $this->client->restart();
+        $this->reset();
         $this->started = false;
-        $this->forms = array();
-        $this->serverParameters = array();
     }
 
     /**
@@ -129,7 +144,9 @@ class BrowserKitDriver extends CoreDriver
      */
     public function reset()
     {
-        $this->client->getCookieJar()->clear();
+        // Restarting the client resets the cookies and the history
+        $this->client->restart();
+        $this->forms = array();
         $this->serverParameters = array();
     }
 
@@ -162,10 +179,7 @@ class BrowserKitDriver extends CoreDriver
         }
 
         if ($request === null) {
-            // If no request exists, return the current
-            // URL as null instead of running into a
-            // "method on non-object" error.
-            return null;
+            throw new DriverException('Unable to access the request before visiting a page');
         }
 
         return $request->getUri();
@@ -257,7 +271,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $name Cookie name.
      */
-    protected function deleteCookie($name)
+    private function deleteCookie($name)
     {
         $path = $this->getCookiePath();
         $jar = $this->client->getCookieJar();
@@ -276,7 +290,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @return string
      */
-    protected function getCookiePath()
+    private function getCookiePath()
     {
         $path = dirname(parse_url($this->getCurrentUrl(), PHP_URL_PATH));
 
@@ -348,7 +362,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getTagName($xpath)
     {
-        return $this->getCrawlerNode($this->getCrawler()->filterXPath($xpath)->eq(0))->nodeName;
+        return $this->getCrawlerNode($this->getFilteredCrawler($xpath))->nodeName;
     }
 
     /**
@@ -356,11 +370,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getText($xpath)
     {
-        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-        }
-
-        $text = $crawler->eq(0)->text();
+        $text = $this->getFilteredCrawler($xpath)->text();
         $text = str_replace("\n", ' ', $text);
         $text = preg_replace('/ {2,}/', ' ', $text);
 
@@ -372,13 +382,18 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getHtml($xpath)
     {
-        $node = $this->getCrawlerNode($this->getCrawler()->filterXPath($xpath)->eq(0));
-        $text = $node->ownerDocument->saveXML($node);
-
         // cut the tag itself (making innerHTML out of outerHTML)
-        $text = preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $text);
+        return preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $this->getOuterHtml($xpath));
+    }
 
-        return $text;
+    /**
+     * {@inheritdoc}
+     */
+    public function getOuterHtml($xpath)
+    {
+        $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
+
+        return $node->ownerDocument->saveXML($node);
     }
 
     /**
@@ -386,7 +401,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getAttribute($xpath, $name)
     {
-        $node = $this->getCrawler()->filterXPath($xpath)->eq(0);
+        $node = $this->getFilteredCrawler($xpath);
 
         if ($this->getCrawlerNode($node)->hasAttribute($name)) {
             return $node->attr($name);
@@ -432,13 +447,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function check($xpath)
     {
-        $field = $this->getFormField($xpath);
-
-        if (!$field instanceof ChoiceFormField) {
-            throw new DriverException(sprintf('Impossible to check the element with XPath "%s" as it is not a checkbox', $xpath));
-        }
-
-        $field->tick();
+        $this->getCheckboxField($xpath)->tick();
     }
 
     /**
@@ -446,13 +455,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function uncheck($xpath)
     {
-        $field = $this->getFormField($xpath);
-
-        if (!$field instanceof ChoiceFormField) {
-            throw new DriverException(sprintf('Impossible to uncheck the element with XPath "%s" as it is not a checkbox', $xpath));
-        }
-
-        $field->untick();
+        $this->getCheckboxField($xpath)->untick();
     }
 
     /**
@@ -463,9 +466,8 @@ class BrowserKitDriver extends CoreDriver
         $field = $this->getFormField($xpath);
 
         if (!$field instanceof ChoiceFormField) {
-            throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select', $xpath));
+            throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select or radio input', $xpath));
         }
-
 
         if ($multiple) {
             $oldValue   = (array) $field->getValue();
@@ -481,11 +483,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function isSelected($xpath)
     {
-        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-        }
-
-        $optionValue = $this->getCrawlerNode($crawler->eq(0))->getAttribute('value');
+        $optionValue = $this->getCrawlerNode($this->getFilteredCrawler($xpath))->getAttribute('value');
         $selectField = $this->getFormField('(' . $xpath . ')/ancestor-or-self::*[local-name()="select"]');
         $selectValue = $selectField->getValue();
 
@@ -497,23 +495,21 @@ class BrowserKitDriver extends CoreDriver
      */
     public function click($xpath)
     {
-        if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-        }
-
-        $node = $nodes->eq(0);
+        $node = $this->getFilteredCrawler($xpath);
         $crawlerNode = $this->getCrawlerNode($node);
         $tagName = $crawlerNode->nodeName;
 
         if ('a' === $tagName) {
             $this->client->click($node->link());
+            $this->forms = array();
         } elseif ($this->canSubmitForm($crawlerNode)) {
             $this->submit($node->form());
         } elseif ($this->canResetForm($crawlerNode)) {
             $this->resetForm($crawlerNode);
         } else {
-            $message = 'BrowserKit driver supports clicking on links and buttons only. But "%s" provided';
-            throw new DriverException(sprintf($message, $tagName));
+            $message = sprintf('%%s supports clicking on links and buttons only. But "%s" provided', $tagName);
+
+            throw new UnsupportedDriverActionException($message, $this);
         }
     }
 
@@ -544,12 +540,10 @@ class BrowserKitDriver extends CoreDriver
      */
     public function submitForm($xpath)
     {
-        if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no form matching XPath "%s"', $xpath));
-        }
+        $crawler = $this->getFilteredCrawler($xpath);
 
         try {
-            $this->submit($nodes->eq(0)->form());
+            $this->submit($crawler->form());
         } catch (\LogicException $e) {
             throw new DriverException($e->getMessage(), 0, $e);
         }
@@ -665,37 +659,41 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function getFormField($xpath)
     {
-        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-        }
-
-        $fieldNode = $this->getCrawlerNode($crawler);
+        $fieldNode = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
         $fieldName = str_replace('[]', '', $fieldNode->getAttribute('name'));
 
         $formNode = $this->getFormNode($fieldNode);
         $formId = $this->getFormNodeId($formNode);
 
-        // check if form already exists
-        if (isset($this->forms[$formId])) {
-            if (is_array($this->forms[$formId][$fieldName])) {
-                return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
-            }
-
-            return $this->forms[$formId][$fieldName];
+        if (!isset($this->forms[$formId])) {
+            $this->forms[$formId] = new Form($formNode, $this->getCurrentUrl());
         }
-
-        // find form button
-        if (null === $buttonNode = $this->findFormButton($formNode)) {
-            throw new DriverException(sprintf('There is no form submit button for field matching XPath "%s"', $xpath));
-        }
-
-        $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
 
         if (is_array($this->forms[$formId][$fieldName])) {
             return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
         }
 
         return $this->forms[$formId][$fieldName];
+    }
+
+    /**
+     * Returns the checkbox field from xpath query, ensuring it is valid.
+     *
+     * @param string $xpath
+     *
+     * @return ChoiceFormField
+     *
+     * @throws DriverException when the field is not a checkbox
+     */
+    private function getCheckboxField($xpath)
+    {
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField) {
+            throw new DriverException(sprintf('Impossible to check the element with XPath "%s" as it is not a checkbox', $xpath));
+        }
+
+        return $field;
     }
 
     /**
@@ -711,7 +709,7 @@ class BrowserKitDriver extends CoreDriver
             $formId = $element->getAttribute('form');
             $formNode = $element->ownerDocument->getElementById($formId);
 
-            if (null === $formNode) {
+            if (null === $formNode || 'form' !== $formNode->nodeName) {
                 throw new DriverException(sprintf('The selected node has an invalid form attribute (%s).', $formId));
             }
 
@@ -749,6 +747,7 @@ class BrowserKitDriver extends CoreDriver
             // more than one element contains this name !
             // so we need to find the position of $fieldNode
             foreach ($elements as $key => $element) {
+                /** @var \DOMElement $element */
                 if ($element->getNodePath() === $fieldNode->getNodePath()) {
                     return $key;
                 }
@@ -837,33 +836,6 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Finds form submit button inside form node.
-     *
-     * @param \DOMElement $form
-     *
-     * @return \DOMElement|null
-     */
-    private function findFormButton(\DOMElement $form)
-    {
-        $xpath = new \DOMXPath($form->ownerDocument);
-
-        $buttonXpath = 'descendant::input[not(@form)] | descendant::button[not(@form)]';
-
-        if ($form->hasAttribute('id')) {
-            $formId = Crawler::xpathLiteral($form->getAttribute('id'));
-            $buttonXpath .= sprintf(' | //input[@form=%s] | //button[@form=%s]', $formId, $formId);
-        }
-
-        foreach ($xpath->query($buttonXpath, $form) as $node) {
-            if ($this->canSubmitForm($node)) {
-                return $node;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Merges second form values into first one.
      *
      * @param Form $to   merging target
@@ -892,21 +864,39 @@ class BrowserKitDriver extends CoreDriver
      * Returns DOMElement from crawler instance.
      *
      * @param Crawler $crawler
-     * @param integer $num     number of node from crawler
      *
      * @return \DOMElement
      *
      * @throws DriverException when the node does not exist
      */
-    private function getCrawlerNode(Crawler $crawler, $num = 0)
+    private function getCrawlerNode(Crawler $crawler)
     {
-        foreach ($crawler as $i => $node) {
-            if ($num == $i) {
-                return $node;
-            }
+        $crawler->rewind();
+        $node = $crawler->current();
+
+        if (null !== $node) {
+            return $node;
         }
 
         throw new DriverException('The element does not exist');
+    }
+
+    /**
+     * Returns a crawler filtered for the given XPath, requiring at least 1 result.
+     *
+     * @param string $xpath
+     *
+     * @return Crawler
+     *
+     * @throws DriverException when no matching elements are found
+     */
+    private function getFilteredCrawler($xpath)
+    {
+        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
+        }
+
+        return $crawler;
     }
 
     /**
@@ -921,7 +911,7 @@ class BrowserKitDriver extends CoreDriver
         $crawler = $this->client->getCrawler();
 
         if (null === $crawler) {
-            throw new DriverException('Crawler can\'t be initialized. Did you started driver?');
+            throw new DriverException('Unable to access the response content before visiting a page');
         }
 
         return $crawler;

@@ -1,12 +1,5 @@
 <?php
 
-namespace Behat\Mink\Driver;
-
-use Behat\Mink\Element\NodeElement;
-use Behat\Mink\Session;
-use Behat\SahiClient\Client;
-use Behat\SahiClient\Exception\ConnectionException;
-
 /*
  * This file is part of the Behat\Mink.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
@@ -14,6 +7,14 @@ use Behat\SahiClient\Exception\ConnectionException;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\Mink\Driver;
+
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\DriverException;
+use Behat\Mink\Session;
+use Behat\SahiClient\Client;
+use Behat\SahiClient\Exception\ConnectionException;
 
 /**
  * Sahi (JS) driver.
@@ -54,9 +55,7 @@ class SahiDriver extends CoreDriver
     }
 
     /**
-     * Sets driver's current session.
-     *
-     * @param Session $session
+     * {@inheritdoc}
      */
     public function setSession(Session $session)
     {
@@ -64,7 +63,7 @@ class SahiDriver extends CoreDriver
     }
 
     /**
-     * Starts driver.
+     * {@inheritdoc}
      */
     public function start()
     {
@@ -73,9 +72,7 @@ class SahiDriver extends CoreDriver
     }
 
     /**
-     * Checks whether driver is started.
-     *
-     * @return Boolean
+     * {@inheritdoc}
      */
     public function isStarted()
     {
@@ -83,7 +80,7 @@ class SahiDriver extends CoreDriver
     }
 
     /**
-     * Stops driver.
+     * {@inheritdoc}
      */
     public function stop()
     {
@@ -92,7 +89,7 @@ class SahiDriver extends CoreDriver
     }
 
     /**
-     * Resets driver.
+     * {@inheritdoc}
      */
     public function reset()
     {
@@ -120,9 +117,7 @@ JS;
     }
 
     /**
-     * Visit specified URL.
-     *
-     * @param string $url url of the page
+     * {@inheritdoc}
      */
     public function visit($url)
     {
@@ -130,9 +125,7 @@ JS;
     }
 
     /**
-     * Returns current URL address.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getCurrentUrl()
     {
@@ -140,7 +133,7 @@ JS;
     }
 
     /**
-     * Reloads current page.
+     * {@inheritdoc}
      */
     public function reload()
     {
@@ -148,7 +141,7 @@ JS;
     }
 
     /**
-     * Moves browser forward 1 page.
+     * {@inheritdoc}
      */
     public function forward()
     {
@@ -156,7 +149,7 @@ JS;
     }
 
     /**
-     * Moves browser backward 1 page.
+     * {@inheritdoc}
      */
     public function back()
     {
@@ -164,18 +157,14 @@ JS;
     }
 
     /**
-     * Sets cookie.
-     *
-     * @param string $name
-     * @param string $value
+     * {@inheritdoc}
      */
     public function setCookie($name, $value = null)
     {
         if (null === $value) {
             $this->deleteCookie($name);
         } else {
-            $value = str_replace('"', '\\"', $value);
-            $this->executeScript(sprintf('_sahi._createCookie("%s", "%s")', $name, $value));
+            $this->executeScript(sprintf('_sahi._createCookie(%s, %s)', json_encode($name), json_encode($value)));
         }
     }
 
@@ -207,19 +196,15 @@ JS;
     }
 
     /**
-     * Returns cookie by name.
-     *
-     * @param string $name
-     *
-     * @return string|null
+     * {@inheritdoc}
      */
     public function getCookie($name)
     {
         try {
-            $cookieValue = $this->evaluateScript(sprintf('_sahi._cookie("%s")', $name));
+            $cookieValue = $this->evaluateScript(sprintf('_sahi._cookie(%s)', json_encode($name)));
 
             return null === $cookieValue ? null : urldecode($cookieValue);
-        } catch (ConnectionException $e) {
+        } catch (DriverException $e) {
             // ignore error
         }
 
@@ -227,9 +212,7 @@ JS;
     }
 
     /**
-     * Returns last response content.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getContent()
     {
@@ -240,19 +223,15 @@ JS;
     }
 
     /**
-     * Finds elements with specified XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return array array of NodeElements
+     * {@inheritdoc}
      */
     public function find($xpath)
     {
-        $jsXpath = $this->prepareXPath($xpath);
+        $jsXpath = json_encode($xpath);
         $function = <<<JS
 (function(){
     var count = 0;
-    while (_sahi._byXPath("({$jsXpath})["+(count+1)+"]")) count++;
+    while (_sahi._byXPath("("+{$jsXpath}+")["+(count+1)+"]")) count++;
     return count;
 })()
 JS;
@@ -267,62 +246,57 @@ JS;
     }
 
     /**
-     * Returns element's tag name by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getTagName($xpath)
     {
-        return strtolower($this->client->findByXPath($xpath)->getName());
+        try {
+            return strtolower($this->client->findByXPath($xpath)->getName());
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while getting the tag name', 0, $e);
+        }
     }
 
     /**
-     * Returns element's text by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getText($xpath)
     {
-        return $this->removeSahiInjectionFromText(
-            $this->client->findByXPath($xpath)->getText()
-        );
+        try {
+            return $this->removeSahiInjectionFromText(
+                $this->client->findByXPath($xpath)->getText()
+            );
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while getting the text', 0, $e);
+        }
     }
 
     /**
-     * Returns element's html by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getHtml($xpath)
     {
-        return $this->client->findByXPath($xpath)->getHTML();
+        try {
+            return $this->client->findByXPath($xpath)->getHTML();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while getting the HTML', 0, $e);
+        }
     }
 
     /**
-     * Returns element's attribute by it's XPath query.
-     *
-     * @param string $xpath
-     * @param string $name
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getAttribute($xpath, $name)
     {
-        return $this->client->findByXPath($xpath)->getAttr($name);
+        try {
+            return $this->client->findByXPath($xpath)->getAttr($name);
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while getting the attribute', 0, $e);
+        }
     }
 
     /**
-     * Returns element's value by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getValue($xpath)
     {
@@ -334,12 +308,13 @@ JS;
             $name = $this->getAttribute($xpath, 'name');
 
             if (null !== $name) {
+                $name = json_encode($name);
                 $function = <<<JS
 (function(){
     for (var i = 0; i < document.forms.length; i++) {
-        if (document.forms[i].elements['{$name}']) {
+        if (document.forms[i].elements[{$name}]) {
             var form  = document.forms[i];
-            var elements = form.elements['{$name}'];
+            var elements = form.elements[{$name}];
             var value = elements[0].value;
             for (var f = 0; f < elements.length; f++) {
                 var item = elements[f];
@@ -359,12 +334,12 @@ JS;
         } elseif ('checkbox' === $type) {
             return $this->isChecked($xpath);
         } elseif ('select' === $tag && 'multiple' === $this->getAttribute($xpath, 'multiple')) {
-            $xpathEscaped = $this->prepareXPath($xpath);
+            $xpathEscaped = json_encode(sprintf('(%s)[1]', $xpath));
 
             $function = <<<JS
 (function(){
     var options = [],
-        node = _sahi._byXPath("({$xpathEscaped})[1]");
+        node = _sahi._byXPath({$xpathEscaped});
 
         for (var i = 0; i < node.options.length; i++) {
             if (node.options[ i ].selected) {
@@ -385,14 +360,15 @@ JS;
             return explode(',', $value);
         }
 
-        return $this->client->findByXPath($xpath)->getValue();
+        try {
+            return $this->client->findByXPath($xpath)->getValue();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while getting the value', 0, $e);
+        }
     }
 
     /**
-     * Sets element's value by it's XPath query.
-     *
-     * @param string $xpath
-     * @param string $value
+     * {@inheritdoc}
      */
     public function setValue($xpath, $value)
     {
@@ -407,48 +383,52 @@ JS;
                 $this->uncheck($xpath);
             }
         } else {
-            $this->client->findByXPath($xpath)->setValue($value);
+            try {
+                $this->client->findByXPath($xpath)->setValue($value);
+            } catch (ConnectionException $e) {
+                throw new DriverException('An error happened while setting the value', 0, $e);
+            }
         }
     }
 
     /**
-     * Checks checkbox by it's XPath query.
-     *
-     * @param string $xpath
+     * {@inheritdoc}
      */
     public function check($xpath)
     {
-        $this->client->findByXPath($xpath)->check();
+        try {
+            $this->client->findByXPath($xpath)->check();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while checking the checkbox', 0, $e);
+        }
     }
 
     /**
-     * Unchecks checkbox by it's XPath query.
-     *
-     * @param string $xpath
+     * {@inheritdoc}
      */
     public function uncheck($xpath)
     {
-        $this->client->findByXPath($xpath)->uncheck();
+        try {
+            $this->client->findByXPath($xpath)->uncheck();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while unchecking the checkbox', 0, $e);
+        }
     }
 
     /**
-     * Checks whether checkbox checked located by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return Boolean
+     * {@inheritdoc}
      */
     public function isChecked($xpath)
     {
-        return $this->client->findByXPath($xpath)->isChecked();
+        try {
+            return $this->client->findByXPath($xpath)->isChecked();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while getting the state of the checkbox', 0, $e);
+        }
     }
 
     /**
-     * Selects option from select field located by it's XPath query.
-     *
-     * @param string  $xpath
-     * @param string  $value
-     * @param Boolean $multiple
+     * {@inheritdoc}
      */
     public function selectOption($xpath, $value, $multiple = false)
     {
@@ -457,188 +437,203 @@ JS;
         if ('radio' === $type) {
             $this->selectRadioOption($xpath, $value);
         } else {
-            $this->client->findByXPath($xpath)->choose($value, $multiple);
+            try {
+                $this->client->findByXPath($xpath)->choose($value, $multiple);
+            } catch (ConnectionException $e) {
+                throw new DriverException('An error happened while choosing an option', 0, $e);
+            }
         }
     }
 
     /**
-     * Checks whether select option, located by it's XPath query, is selected.
-     *
-     * @param string $xpath
-     *
-     * @return Boolean
+     * {@inheritdoc}
      */
     public function isSelected($xpath)
     {
-        return $this->client->findByXPath($xpath)->isSelected();
+        try {
+            return $this->client->findByXPath($xpath)->isSelected();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while getting the state of an option', 0, $e);
+        }
     }
 
     /**
-     * Clicks button or link located by it's XPath query.
-     *
-     * @param string $xpath
+     * {@inheritdoc}
      */
     public function click($xpath)
     {
-        $this->client->findByXPath($xpath)->click();
+        try {
+            $this->client->findByXPath($xpath)->click();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while clicking', 0, $e);
+        }
     }
 
     /**
-     * Double-clicks button or link located by it's XPath query.
-     *
-     * @param string $xpath
+     * {@inheritdoc}
      */
     public function doubleClick($xpath)
     {
-        $this->client->findByXPath($xpath)->doubleClick();
+        try {
+            $this->client->findByXPath($xpath)->doubleClick();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while double clicking', 0, $e);
+        }
     }
 
     /**
-     * Right-clicks button or link located by it's XPath query.
-     *
-     * @param string $xpath
+     * {@inheritdoc}
      */
     public function rightClick($xpath)
     {
-        $this->client->findByXPath($xpath)->rightClick();
+        try {
+            $this->client->findByXPath($xpath)->rightClick();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while right clicking', 0, $e);
+        }
     }
 
     /**
-     * Attaches file path to file field located by it's XPath query.
-     *
-     * @param string $xpath
-     * @param string $path
+     * {@inheritdoc}
      */
     public function attachFile($xpath, $path)
     {
-        $this->client->findByXPath($xpath)->setFile($path);
+        try {
+            $this->client->findByXPath($xpath)->setFile($path);
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while setting the file', 0, $e);
+        }
     }
 
     /**
-     * Checks whether element visible located by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return Boolean
+     * {@inheritdoc}
      */
     public function isVisible($xpath)
     {
-        return $this->client->findByXPath($xpath)->isVisible();
+        try {
+            return $this->client->findByXPath($xpath)->isVisible();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while getting the visibility', 0, $e);
+        }
     }
 
     /**
-     * Simulates a mouse over on the element.
-     *
-     * @param string $xpath
+     * {@inheritdoc}
      */
     public function mouseOver($xpath)
     {
-        $this->client->findByXPath($xpath)->mouseOver();
+        try {
+            $this->client->findByXPath($xpath)->mouseOver();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while mouving the mouse over the element', 0, $e);
+        }
     }
 
     /**
-     * Brings focus to element.
-     *
-     * @param string $xpath
+     * {@inheritdoc}
      */
     public function focus($xpath)
     {
-        $this->client->findByXPath($xpath)->focus();
+        try {
+            $this->client->findByXPath($xpath)->focus();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while focusing the element', 0, $e);
+        }
     }
 
     /**
-     * Removes focus from element.
-     *
-     * @param string $xpath
+     * {@inheritdoc}
      */
     public function blur($xpath)
     {
-        $this->client->findByXPath($xpath)->blur();
+        try {
+            $this->client->findByXPath($xpath)->blur();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while blurring the element', 0, $e);
+        }
     }
 
     /**
-     * Presses specific keyboard key.
-     *
-     * @param string $xpath
-     * @param mixed  $char     could be either char ('b') or char-code (98)
-     * @param string $modifier keyboard modifier (could be 'ctrl', 'alt', 'shift' or 'meta')
+     * {@inheritdoc}
      */
     public function keyPress($xpath, $char, $modifier = null)
     {
-        $this->client->findByXPath($xpath)->keyPress($char, strtoupper($modifier));
+        try {
+            $this->client->findByXPath($xpath)->keyPress($char, strtoupper($modifier));
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while pressing a key', 0, $e);
+        }
     }
 
     /**
-     * Pressed down specific keyboard key.
-     *
-     * @param string $xpath
-     * @param mixed  $char     could be either char ('b') or char-code (98)
-     * @param string $modifier keyboard modifier (could be 'ctrl', 'alt', 'shift' or 'meta')
+     * {@inheritdoc}
      */
     public function keyDown($xpath, $char, $modifier = null)
     {
-        $this->client->findByXPath($xpath)->keyDown($char, strtoupper($modifier));
+        try {
+            $this->client->findByXPath($xpath)->keyDown($char, strtoupper($modifier));
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while pressing a key', 0, $e);
+        }
     }
 
     /**
-     * Pressed up specific keyboard key.
-     *
-     * @param string $xpath
-     * @param mixed  $char     could be either char ('b') or char-code (98)
-     * @param string $modifier keyboard modifier (could be 'ctrl', 'alt', 'shift' or 'meta')
+     * {@inheritdoc}
      */
     public function keyUp($xpath, $char, $modifier = null)
     {
-        $this->client->findByXPath($xpath)->keyUp($char, strtoupper($modifier));
+        try {
+            $this->client->findByXPath($xpath)->keyUp($char, strtoupper($modifier));
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while pressing a key', 0, $e);
+        }
     }
 
     /**
-     * Drag one element onto another.
-     *
-     * @param string $sourceXpath
-     * @param string $destinationXpath
+     * {@inheritdoc}
      */
     public function dragTo($sourceXpath, $destinationXpath)
     {
         $from = $this->client->findByXPath($sourceXpath);
         $to   = $this->client->findByXPath($destinationXpath);
 
-        $from->dragDrop($to);
+        try {
+            $from->dragDrop($to);
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while dragging the element', 0, $e);
+        }
     }
 
     /**
-     * Executes JS script.
-     *
-     * @param string $script
+     * {@inheritdoc}
      */
     public function executeScript($script)
     {
         $script = $this->prepareScript($script);
 
-        $this->client->getConnection()->executeJavascript($script);
+        try {
+            $this->client->getConnection()->executeJavascript($script);
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while executing the script', 0, $e);
+        }
     }
 
     /**
-     * Evaluates JS script.
-     *
-     * @param string $script
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function evaluateScript($script)
     {
         $script = $this->prepareScript($script);
 
-        return $this->client->getConnection()->evaluateJavascript($script);
+        try {
+            return $this->client->getConnection()->evaluateJavascript($script);
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while evaluating the script', 0, $e);
+        }
     }
 
     /**
-     * Waits some time or until JS condition turns true.
-     *
-     * @param integer $timeout   timeout in milliseconds
-     * @param string  $condition JS condition
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function wait($timeout, $condition)
     {
@@ -646,13 +641,15 @@ JS;
     }
 
     /**
-     * Submits the form.
-     *
-     * @param string $xpath Xpath.
+     * {@inheritdoc}
      */
     public function submitForm($xpath)
     {
-        $this->client->findByXPath($xpath)->submitForm();
+        try {
+            $this->client->findByXPath($xpath)->submitForm();
+        } catch (ConnectionException $e) {
+            throw new DriverException('An error happened while submitting the form', 0, $e);
+        }
     }
 
     /**
@@ -666,13 +663,13 @@ JS;
         $name = $this->getAttribute($xpath, 'name');
 
         if (null !== $name) {
+            $name = json_encode($name);
             $function = <<<JS
 (function(){
     for (var i = 0; i < document.forms.length; i++) {
-        if (document.forms[i].elements['{$name}']) {
+        if (document.forms[i].elements[{$name}]) {
             var form  = document.forms[i];
-            var elements = form.elements['{$name}'];
-            var value = elements[0].value;
+            var elements = form.elements[{$name}];
             for (var f = 0; f < elements.length; f++) {
                 var item = elements[f];
                 if ("{$value}" == item.value) {
@@ -703,18 +700,6 @@ JS;
 
             $this->executeScript($function);
         }
-    }
-
-    /**
-     * Prepare XPath to be sent via Sahi proxy.
-     *
-     * @param string $xpath
-     *
-     * @return string
-     */
-    private function prepareXPath($xpath)
-    {
-        return substr(json_encode((string)$xpath), 1, -1);
     }
 
     /**

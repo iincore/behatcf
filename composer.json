@@ -19,7 +19,8 @@
         "behat/mink-sahi-driver": "*",
         "jaz303/phake": "*",
         "symfony/process": "*",
-        "gabordemooij/redbean": "v3.5.1"
+        "gabordemooij/redbean": "v3.5.1",
+        "vipsoft/code-coverage-extension": "*"
     },
     "minimum-stability": "dev",
     "config": {
