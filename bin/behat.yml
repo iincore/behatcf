@@ -6,7 +6,7 @@ default:
   context:
     class:                            'FeatureContext'
     parameters :
-          signup_email: testuser129@iincore.com
+          signup_email: testuser142@iincore.com
           signup_password: iincore
 
           first_name: Lakshana
@@ -31,7 +31,7 @@ default:
     bootstrap:                        'features/bootstrap'
   extensions:
     Behat\MinkExtension\Extension:
-      base_url:                       'http://ec2-54-224-48-21.compute-1.amazonaws.com'
+      base_url:                       'https://ec2-54-224-48-21.compute-1.amazonaws.com'
       javascript_session:             'selenium2'
       selenium2:                      ~
       goutte:                         ~
