@@ -87,7 +87,7 @@ h.Search with Created/Updated
     When I select "2" from "connect"
     And I click on field "img#search-icon"
     Then I look for the output wait "60" seconds
-    When I check text "Accepted" in the element with xpath "//div[2]/div/div/div/div[2]/div[2]/table/tbody/tr/td[2]/span"
+    When I check text "Accepted" in the element with xpath "//div[2]/div/div/div/div[3]/div/div/div/div[2]/div[2]/div/button"
   #
   #Search with Created/Updated
   #
