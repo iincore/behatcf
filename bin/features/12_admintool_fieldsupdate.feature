@@ -51,8 +51,9 @@ Search with user id and update
     Then I look for the output wait "60" seconds
     And I should see "Send message"
     Then I press "submit-message"
-    Then I look for the output wait "30" seconds
+    Then I look for the output wait "60" seconds
     And I should see "Message Sent!"
+    Then I look for the output wait "30" seconds
     Then I press "close-contact"
     And I look for the output wait "30" seconds
   #

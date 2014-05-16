@@ -21,8 +21,8 @@ default:
 
           admin_from_date: 01/23/2013
           admin_to_date: 04/29/2014
-          admin_id: 20886
-          admin_name: kishore test
+          admin_id: 3
+          admin_name: Lakshana
           admin_autodispose_date: 04/25/2014
 
           emp_name: kishore

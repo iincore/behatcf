@@ -36,6 +36,7 @@ All searching Criterias
     And I check "international"
     When I select "Software Engineering" from "category-filter"
     Then I look for the output wait "60" seconds
+    When I check text "Software Engineering" in the element with xpath "//div[4]/div/div/div/div/div/div/div/div/div/div[2]"
 #
 #Search with School
 #
@@ -46,6 +47,7 @@ All searching Criterias
     When I fill in "school" with "Stanford University (CA)"
     When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
+    When I check text "Stanford University (CA)" in the element with xpath "//div[4]/div/div/div/div/div/div/div/div/div/div[2]"
 #
 #Search with Major
 #
@@ -63,9 +65,10 @@ All searching Criterias
     Then I look for the output wait "30" seconds
     When I click on field "#toggle-advanced"
     And I check "international"
-    When I fill in "degree" with "BS"
+    When I fill in "degree" with "MS"
     When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
+    When I check text "MS" in the element with xpath "//div[4]/div/div/div/div/div/div/div/div/div/div[2]"
 #
 #Search for Graduated
 #
@@ -99,9 +102,21 @@ All searching Criterias
     Then I look for the output wait "30" seconds
     When I click on field "#toggle-advanced"
     And I check "international"
-    When I fill in "name" with "kishore"
+    When I fill in "name" with "Rahul"
     When I click on field "#search-icon"
     Then I look for the output wait "60" seconds
+    Then I should see "Rahul"
+#
+#Search with company experiance
+#
+    Given I am on "/employer/search"
+    Then I look for the output wait "30" seconds
+    When I click on field "#toggle-advanced"
+    And I check "international"
+    When I fill in "company" with "google"
+    When I click on field "#search-icon"
+    Then I look for the output wait "60" seconds
+    Then I should see "Google"
 
 
 
