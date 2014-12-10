@@ -1,31 +1,19 @@
 {
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/pthurmond/Mink.git"
-        },
-        {
-            "type": "git",
-            "url": "https://github.com/pthurmond/MinkSelenium2Driver.git"
-        }
-    ],
     "require": {
         "behat/behat": "2.4.*@stable",
-        "behat/mink": "dev-FindWindowNames as 1.5.x-dev",
-        "behat/mink-extension": "*",
-        "behat/mink-goutte-driver": "*",
+        "behat/mink": "1.4.*@stable",
+        "behat/mink-extension": "@stable",
+        "behat/mink-goutte-driver": "@stable",
         "behat/mink-selenium-driver": "*",
-        "behat/mink-selenium2-driver": "dev-FindWindowNamesInSelenium2",
-        "behat/mink-sahi-driver": "*",
+        "behat/mink-selenium2-driver": "*",
+        "behat/mink-zombie-driver": "*",
         "jaz303/phake": "*",
         "symfony/process": "*",
         "gabordemooij/redbean": "v3.5.1"
+
     },
     "minimum-stability": "dev",
     "config": {
-        "bin-dir": "bin"
-    },
-    "autoload": {
-        "psr-0": {"BehatPopupExtension": "bin/BehatPopupExtension"}
+        "bin-dir": "bin/"
     }
 }

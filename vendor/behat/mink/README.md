@@ -28,16 +28,13 @@ $startUrl = 'http://example.com';
 
 // init Mink and register sessions
 $mink = new Mink(array(
-    'goutte1' => new Session(new GoutteDriver(new GoutteClient())),
-    'goutte2' => new Session(new GoutteDriver(new GoutteClient())),
+    'goutte1' => new Session(new GoutteDriver(GoutteClient($startUrl))),
+    'goutte2' => new Session(new GoutteDriver(GoutteClient($startUrl))),
     'custom'  => new Session(new MyCustomDriver($startUrl))
 ));
 
 // set the default session name
 $mink->setDefaultSessionName('goutte2');
-
-// visit a page
-$mink->getSession()->visit($startUrl);
 
 // call to getSession() without argument will always return a default session if has one (goutte2 here)
 $mink->getSession()->getPage()->findLink('Downloads')->click();

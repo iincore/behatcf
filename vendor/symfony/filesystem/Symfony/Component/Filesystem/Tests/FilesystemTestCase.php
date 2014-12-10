@@ -65,7 +65,7 @@ class FilesystemTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param int $expectedFilePerms expected file permissions as three digits (i.e. 755)
+     * @param int    $expectedFilePerms expected file permissions as three digits (i.e. 755)
      * @param string $filePath
      */
     protected function assertFilePermissions($expectedFilePerms, $filePath)
@@ -96,6 +96,8 @@ class FilesystemTestCase extends \PHPUnit_Framework_TestCase
         if ($datas = posix_getgrgid($infos['gid'])) {
             return $datas['name'];
         }
+
+        $this->markTestSkipped('Unable to retrieve file group name');
     }
 
     protected function markAsSkippedIfSymlinkIsMissing()

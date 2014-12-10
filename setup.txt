@@ -4,11 +4,13 @@ behat --init
 
 #Run selenium-server
 java -jar selenium-server-standalone-2.41.0.jar  -interactive
+java -jar selenium-server-standalone-2.44.0.jar  -interactive
 
 
 behat --name login
 
 behat features/17_empdb_connectstatus.feature
+behat ln_features/linkedin_login.feature
 
 #Run Different profiles based on environment
 behat --profile prod features/auth.feature

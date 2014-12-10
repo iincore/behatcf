@@ -7,7 +7,7 @@ use Behat\Mink\Driver\GoutteDriver;
 /**
  * @group gouttedriver
  */
-class GoutteDriverTest extends GeneralDriverTest
+class GoutteDriverTest extends HeadlessDriverTest
 {
     protected static function getDriver()
     {

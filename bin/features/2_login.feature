@@ -10,7 +10,7 @@ Feature: collegefeed login
 
   @javascript
   Scenario: Login to collegefeed using good data
-    Given I am on "/login"
+    Given I am on "https://ec2-54-224-48-21.compute-1.amazonaws.com/login"
     When I fill in "username" with "{username}"
     And I fill in "password" with "{password}"
     Then I press "_submit"

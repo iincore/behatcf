@@ -11,13 +11,13 @@ default:
 
           first_name: Lakshana
           last_name: Pant
-          username: lakshana
-          password : collegefeed
+          username: 'parvinder@iincore.com'
+          password : 'parv__123'
 
           db: cf_feeds
-          host: cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com
-          db_username: collegefeed
-          db_password: collegefeed
+          host: localhost #cf-qa.c0kgaqc2fwfh.us-east-1.rds.amazonaws.com
+          db_username: root
+          db_password:
 
           admin_from_date: 01/23/2013
           admin_to_date: 04/29/2014
@@ -28,10 +28,10 @@ default:
           emp_name: kishore
           emp_bucketname: testqa1
   paths:
-    bootstrap:                        'features/bootstrap'
+    bootstrap:                        'ln_features/bootstrap'
   extensions:
     Behat\MinkExtension\Extension:
-      base_url:                       'https://ec2-54-224-48-21.compute-1.amazonaws.com'
+      base_url:                       'https://linkedin.com'
       javascript_session:             'selenium2'
       selenium2:                      ~
       goutte:                         ~

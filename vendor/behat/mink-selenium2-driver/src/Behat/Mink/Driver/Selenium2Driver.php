@@ -4,10 +4,10 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Session,
     Behat\Mink\Element\NodeElement,
-    Behat\Mink\Exception\DriverException;
+    Behat\Mink\Exception\DriverException,
+    Behat\Mink\Exception\UnsupportedDriverActionException;
 
 use WebDriver\WebDriver;
-use WebDriver\Key;
 
 /*
  * This file is part of the Behat\Mink.
@@ -22,7 +22,7 @@ use WebDriver\Key;
  *
  * @author Pete Otaqui <pete@otaqui.com>
  */
-class Selenium2Driver extends CoreDriver
+class Selenium2Driver implements DriverInterface
 {
     /**
      * The current Mink session
@@ -163,9 +163,7 @@ class Selenium2Driver extends CoreDriver
 
     /**
      * Makes sure that the Syn event library has been injected into the current page,
-     * and return $this for a fluid interface,
-     *
-     *     $this->withSyn()->executeJsOnXpath($xpath, $script);
+     * and return $this for a fluid interface, * $this->withSyn()->executeJsOnXpath($xpath, $script);
      *
      * @return Selenium2Driver
      */
@@ -363,6 +361,38 @@ class Selenium2Driver extends CoreDriver
     }
 
     /**
+     * Sets HTTP Basic authentication parameters
+     *
+     * @param   string|false    $user       user name or false to disable authentication
+     * @param   string          $password   password
+     */
+    public function setBasicAuth($user, $password)
+    {
+        throw new UnsupportedDriverActionException('Basic Auth is not supported by %s', $this);
+    }
+
+    /**
+     * Sets specific request header on client.
+     *
+     * @param   string  $name
+     * @param   string  $value
+     */
+    public function setRequestHeader($name, $value)
+    {
+        throw new UnsupportedDriverActionException('Request header is not supported by %s', $this);
+    }
+
+    /**
+     * Returns last response headers.
+     *
+     * @return  array
+     */
+    public function getResponseHeaders()
+    {
+        throw new UnsupportedDriverActionException('Response header is not supported by %s', $this);
+    }
+
+    /**
      * Sets cookie.
      *
      * @param   string  $name
@@ -403,6 +433,16 @@ class Selenium2Driver extends CoreDriver
     }
 
     /**
+     * Returns last response status code.
+     *
+     * @return  integer
+     */
+    public function getStatusCode()
+    {
+        throw new UnsupportedDriverActionException('Status code is not supported by %s', $this);
+    }
+
+    /**
      * Returns last response content.
      *
      * @return  string
@@ -421,26 +461,6 @@ class Selenium2Driver extends CoreDriver
     public function getScreenshot()
     {
         return base64_decode($this->wdSession->screenshot());
-    }
-
-    /**
-     * Return the names of all open windows
-     *
-     * @return array    Array of all open window's names.
-     */
-    public function getWindowNames()
-    {
-        return $this->wdSession->window_handles();
-    }
-
-    /**
-     * Return the name of the currently active window
-     *
-     * @return string    The name of the current window.
-     */
-    public function getWindowName()
-    {
-        return $this->wdSession->window_handle();
     }
 
     /**
@@ -606,25 +626,17 @@ JS;
      */
     public function setValue($xpath, $value)
     {
-        $value = strval($value);
         $element = $this->wdSession->element('xpath', $xpath);
         $elementname = strtolower($element->name());
-
-        switch (true) {
-            case ($elementname == 'input' && strtolower($element->attribute('type')) == 'text'):
-                for ($i = 0; $i < strlen($element->attribute('value')); $i++) {
-                    $value = Key::BACKSPACE . $value;
-                }
-                break;
-            case ($elementname == 'textarea'):
-            case ($elementname == 'input' && strtolower($element->attribute('type')) != 'file'):
-                $element->clear();
-                break;
+        if (
+            $elementname == 'textarea' ||
+            ($elementname == 'input' && strtolower($element->attribute('type')) != 'file')
+        )
+        {
+            $element->clear();
         }
 
         $element->value(array('value' => array($value)));
-        $script = "Syn.trigger('change', {}, {{ELEMENT}})";
-        $this->withSyn()->executeJsOnXpath($xpath, $script);
     }
 
     /**
@@ -635,8 +647,6 @@ JS;
     public function check($xpath)
     {
         $this->executeJsOnXpath($xpath, '{{ELEMENT}}.checked = true');
-        $script = "Syn.trigger('change', {}, {{ELEMENT}})";
-        $this->withSyn()->executeJsOnXpath($xpath, $script);
     }
 
     /**
@@ -647,8 +657,6 @@ JS;
     public function uncheck($xpath)
     {
         $this->executeJsOnXpath($xpath, '{{ELEMENT}}.checked = false');
-        $script = "Syn.trigger('change', {}, {{ELEMENT}})";
-        $this->withSyn()->executeJsOnXpath($xpath, $script);
     }
 
     /**
@@ -715,12 +723,6 @@ if (node.tagName == 'SELECT') {
         if (nodes[i].getAttribute('value') == "$valueEscaped") {
             node.checked = true;
         }
-    }
-    if (node.tagName == 'INPUT') {
-      var type = node.getAttribute('type');
-      if (type == 'radio') {
-        triggerEvent(node, 'change');
-      }
     }
 }
 JS;
@@ -937,11 +939,10 @@ JS;
     public function wait($time, $condition)
     {
         $script = "return $condition;";
-        $start = microtime(true);
-        $end = $start + $time / 1000.0;
-
-        while (microtime(true) < $end && !$this->wdSession->execute(array('script' => $script, 'args' => array()))) {
-            usleep(100000);
+        $start = 1000 * microtime(true);
+        $end = $start + $time;
+        while (1000 * microtime(true) < $end && !$this->wdSession->execute(array('script' => $script, 'args' => array()))) {
+            sleep(0.1);
         }
     }
 
@@ -954,6 +955,6 @@ JS;
      */
     public function resizeWindow($width, $height, $name = null)
     {
-        return $this->wdSession->window($name ? $name : 'current')->postSize(array('width' => $width, 'height' => $height));
+        return $this->wdSession->window($name ? $name : '')->postSize(array('width' => $width, 'height' => $height));
     }
 }

@@ -40,11 +40,11 @@ class FeatureContext extends \Behat\MinkExtension\Context\RawMinkContext impleme
         $password = $this->replaceParameter($password);
         return array(
             new Step\When('I maximize the window'),
-            new Step\When('I am on "/login"'),
+            new Step\When('I am on "/"'),
             new Step\When('I fill in "username" with "'.$username.'"'),
             new Step\When('I fill in "password" with "'.$password.'"'),
             new Step\When('I press "_submit"'),
-            new Step\When('I should see "Dashboard"'),
+            new Step\When('I should see "Home"'),
         );
     }
 

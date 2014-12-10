@@ -52,37 +52,4 @@ class Selenium2DriverTest extends JavascriptDriverTest
 
         $this->assertContains("foo\nbar", $session->getPage()->findById('textarea')->getValue());
     }
-    
-    public function testGetWindowNames()
-    {
-        $windowNames = $this->getSession()->getWindowNames();
-        $this->assertArrayHasKey(0, $windowNames);
-
-        foreach ($windowNames as $name) {
-            $this->assertRegExp('\{[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}\}', $name);
-        }
-    }
-
-    public function testGetWindowName()
-    {
-        $this->assertRegExp('\{[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}\}', $this->getSession()->getWindowName());
-    }
-
-    public function testGetWindowNameCalls()
-    {
-        $this->getSession()->visit($this->pathTo('/window.php'));
-        $session = $this->getSession();
-        $page    = $session->getPage();
-
-        $windowName = $this->getSession()->getWindowName();
-        $this->assertNotNull($windowName);
-
-        $page->clickLink('Popup #1');
-        $page->clickLink('Popup #2');
-
-        $windowNames = $this->getSession()->getWindowNames();
-        $this->assertNotNull($windowNames[0]);
-        $this->assertNotNull($windowNames[1]);
-        $this->assertNotNull($windowNames[2]);
-    }
 }
